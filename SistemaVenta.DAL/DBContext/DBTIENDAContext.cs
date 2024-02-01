@@ -304,6 +304,8 @@ namespace SistemaVenta.DAL.DBContext
                     .HasColumnName("fechaRegistro")
                     .HasDefaultValueSql("(getdate())");
 
+                entity.Property(e => e.IdSucursal).HasColumnName("idSucursal");
+
                 entity.Property(e => e.IdUsuario).HasColumnName("idUsuario");
 
                 entity.Property(e => e.Nombres)
@@ -315,6 +317,11 @@ namespace SistemaVenta.DAL.DBContext
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("telefono");
+
+                entity.HasOne(d => d.IdSucursalNavigation)
+                    .WithMany(p => p.Empleados)
+                    .HasForeignKey(d => d.IdSucursal)
+                    .HasConstraintName("FK__Empleado__idSucu__30C33EC3");
 
                 entity.HasOne(d => d.IdUsuarioNavigation)
                     .WithMany(p => p.Empleados)
@@ -493,12 +500,19 @@ namespace SistemaVenta.DAL.DBContext
 
                 entity.Property(e => e.IdSesion).HasColumnName("idSesion");
 
+                entity.Property(e => e.IdSucursal).HasColumnName("idSucursal");
+
                 entity.Property(e => e.Numero).HasColumnName("numero");
 
                 entity.HasOne(d => d.IdSesionNavigation)
                     .WithMany(p => p.PuntoVenta)
                     .HasForeignKey(d => d.IdSesion)
                     .HasConstraintName("FK__PuntoVent__idSes__14270015");
+
+                entity.HasOne(d => d.IdSucursalNavigation)
+                    .WithMany(p => p.PuntoVenta)
+                    .HasForeignKey(d => d.IdSucursal)
+                    .HasConstraintName("FK__PuntoVent__idSuc__31B762FC");
             });
 
             modelBuilder.Entity<Rol>(entity =>
@@ -607,10 +621,6 @@ namespace SistemaVenta.DAL.DBContext
                     .IsUnicode(false)
                     .HasColumnName("domicilio");
 
-                entity.Property(e => e.IdEmpleado).HasColumnName("idEmpleado");
-
-                entity.Property(e => e.IdPuntoVenta).HasColumnName("idPuntoVenta");
-
                 entity.Property(e => e.Nombre)
                     .HasMaxLength(50)
                     .IsUnicode(false)
@@ -634,16 +644,6 @@ namespace SistemaVenta.DAL.DBContext
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("telefono");
-
-                entity.HasOne(d => d.IdEmpleadoNavigation)
-                    .WithMany(p => p.Sucursals)
-                    .HasForeignKey(d => d.IdEmpleado)
-                    .HasConstraintName("FK__Sucursal__idEmpl__17F790F9");
-
-                entity.HasOne(d => d.IdPuntoVentaNavigation)
-                    .WithMany(p => p.Sucursals)
-                    .HasForeignKey(d => d.IdPuntoVenta)
-                    .HasConstraintName("FK__Sucursal__idPunt__18EBB532");
             });
 
             modelBuilder.Entity<Talle>(entity =>

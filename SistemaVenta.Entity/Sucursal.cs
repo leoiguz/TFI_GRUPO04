@@ -5,6 +5,12 @@ namespace SistemaVenta.Entity
 {
     public partial class Sucursal
     {
+        public Sucursal()
+        {
+            Empleados = new HashSet<Empleado>();
+            PuntoVenta = new HashSet<PuntoVenta>();
+        }
+
         public int IdSucursal { get; set; }
         public string? NumeroDocumento { get; set; }
         public string? Nombre { get; set; }
@@ -14,10 +20,8 @@ namespace SistemaVenta.Entity
         public string? Telefono { get; set; }
         public decimal? PorcentajeImpuesto { get; set; }
         public string? SimboloMoneda { get; set; }
-        public int? IdEmpleado { get; set; }
-        public int? IdPuntoVenta { get; set; }
 
-        public virtual Empleado? IdEmpleadoNavigation { get; set; }
-        public virtual PuntoVenta? IdPuntoVentaNavigation { get; set; }
+        public virtual ICollection<Empleado> Empleados { get; set; }
+        public virtual ICollection<PuntoVenta> PuntoVenta { get; set; }
     }
 }

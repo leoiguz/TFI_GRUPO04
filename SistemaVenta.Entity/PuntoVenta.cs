@@ -7,7 +7,6 @@ namespace SistemaVenta.Entity
     {
         public PuntoVenta()
         {
-            Sucursals = new HashSet<Sucursal>();
             Venta = new HashSet<Venta>();
         }
 
@@ -16,9 +15,10 @@ namespace SistemaVenta.Entity
         public int? IdSesion { get; set; }
         public bool? EsActivo { get; set; }
         public DateTime? FechaRegistro { get; set; }
+        public int? IdSucursal { get; set; }
 
         public virtual Sesion? IdSesionNavigation { get; set; }
-        public virtual ICollection<Sucursal> Sucursals { get; set; }
+        public virtual Sucursal? IdSucursalNavigation { get; set; }
         public virtual ICollection<Venta> Venta { get; set; }
     }
 }
