@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SistemaVenta.Entity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace SistemaVenta.BLL.Interfaces
 {
-    public interface ICorreoService
+    public interface IRolService
     {
-        Task<bool> EnviarCorreo(string correoDestino, string Asunto, string Mensaje);
+        Task<List<Rol>> Lista();
     }
 }

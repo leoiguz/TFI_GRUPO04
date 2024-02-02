@@ -26,7 +26,7 @@ namespace SistemaVenta.BLL.Implementacion
             string UrlImagen = "";
             try
             {
-                IQueryable<Configuracion> querry = await _repositorio.Consultas(c => c.Recurso.SequenceEqual("FireBase_Storage"));
+                IQueryable<Configuracion> querry = await _repositorio.Consultar(c => c.Recurso.SequenceEqual("FireBase_Storage"));
                 Dictionary<string, string> Config = querry.ToDictionary(keySelector: c => c.Propiedad, elementSelector: c => c.Valor);
 
                 var auth = new FirebaseAuthProvider(new FirebaseConfig(Config["api_key"]));
@@ -59,7 +59,7 @@ namespace SistemaVenta.BLL.Implementacion
         {
             try
             {
-                IQueryable<Configuracion> querry = await _repositorio.Consultas(c => c.Recurso.SequenceEqual("FireBase_Storage"));
+                IQueryable<Configuracion> querry = await _repositorio.Consultar(c => c.Recurso.SequenceEqual("FireBase_Storage"));
                 Dictionary<string, string> Config = querry.ToDictionary(keySelector: c => c.Propiedad, elementSelector: c => c.Valor);
 
                 var auth = new FirebaseAuthProvider(new FirebaseConfig(Config["api_key"]));

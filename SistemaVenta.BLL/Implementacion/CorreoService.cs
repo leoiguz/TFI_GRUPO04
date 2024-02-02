@@ -19,11 +19,11 @@ namespace SistemaVenta.BLL.Implementacion
         {
                _repositorio = repositorio;
         }
-        public async Task<bool> EnviarCorro(string correoDestino, string Asunto, string Mensaje)
+        public async Task<bool> EnviarCorreo(string correoDestino, string Asunto, string Mensaje)
         {
             try
             {
-                IQueryable<Configuracion> querry = await _repositorio.Consultas(c=>c.Recurso.SequenceEqual("Servicio_Correo"));
+                IQueryable<Configuracion> querry = await _repositorio.Consultar(c=>c.Recurso.SequenceEqual("Servicio_Correo"));
                 Dictionary<string, string> Config = querry.ToDictionary(keySelector: c => c.Propiedad, elementSelector: c => c.Valor);
 
                 var credenciales = new NetworkCredential(Config["correo"], Config["clave"]);
