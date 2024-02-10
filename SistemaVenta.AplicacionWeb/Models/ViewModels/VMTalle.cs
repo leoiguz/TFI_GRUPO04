@@ -6,6 +6,6 @@
         public string? Descripcion { get; set; }
         public string? IdTipoTalle { get; set; }
         public string? NombreTipoTalle { get; set; }
-        public int EsActivo { get; set; }
+        public int esActivo { get; set; }
     }
 }

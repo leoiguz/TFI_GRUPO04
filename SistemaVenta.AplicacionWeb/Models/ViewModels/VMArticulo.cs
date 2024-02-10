@@ -11,7 +11,7 @@
         public string? Descripcion { get; set; }
         public int? IdCategoria { get; set; }
         public string? NombreCategoria { get; set; }
-        public decimal? Precio { get; set; }
+        public decimal? Costo { get; set; }
         public int? EsActivo { get; set; }
     }
 }

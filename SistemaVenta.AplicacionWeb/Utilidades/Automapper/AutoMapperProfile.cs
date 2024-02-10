@@ -3,11 +3,11 @@ using SistemaVenta.Entity;
 using System.Globalization;
 using AutoMapper;
 
-namespace SistemaVenta.AplicacionWeb.Utilidades.Automapper
+namespace SistemaVenta.AplicacionWeb.Utilidades.AutomapARr
 {
-    public class AutoMapperProfile : Profile
+    public class AutoMapARrProfile : Profile
     {
-        public AutoMapperProfile() 
+        public AutoMapARrProfile() 
         {
             #region Rol
             CreateMap<Rol, VMRol>().ReverseMap();
@@ -35,7 +35,252 @@ namespace SistemaVenta.AplicacionWeb.Utilidades.Automapper
                 );
             #endregion Usuario
 
+            #region Sucursal
+            CreateMap<Sucursal, VMSucursal>()
+                .ForMember(destino =>
+                destino.PorcentajeImpuesto,
+                opt => opt.MapFrom(origen => Convert.ToString(origen.PorcentajeImpuesto.Value, new CultureInfo("es-AR")))
+                );
 
+            CreateMap<VMSucursal, Sucursal>()
+                .ForMember(destino =>
+                destino.PorcentajeImpuesto,
+                opt => opt.MapFrom(origen => Convert.ToDecimal(origen.PorcentajeImpuesto.Value, new CultureInfo("es-AR")))
+                );
+            #endregion Sucursal
+
+            #region Categoria
+            CreateMap<Categoria, VMCategoria>()
+                .ForMember(destino =>
+                destino.esActivo,
+                opt => opt.MapFrom(origen => origen.EsActivo == true ? 1 : 0)
+                );
+
+            CreateMap<VMCategoria, Categoria>()
+                .ForMember(destino =>
+                destino.EsActivo,
+                opt => opt.MapFrom(origen => origen.esActivo == 1 ? true : false)
+                );
+            #endregion Categoria
+
+            #region Marca
+            CreateMap<Marca, VMMarca>()
+                .ForMember(destino =>
+                destino.esActivo,
+                opt => opt.MapFrom(origen => origen.EsActivo == true ? 1 : 0)
+                );
+
+            CreateMap<VMMarca, Marca>()
+                .ForMember(destino =>
+                destino.EsActivo,
+                opt => opt.MapFrom(origen => origen.esActivo == 1 ? true : false)
+                );
+            #endregion Marca
+
+            #region Color
+            CreateMap<Color, VMColor>()
+                .ForMember(destino =>
+                destino.esActivo,
+                opt => opt.MapFrom(origen => origen.EsActivo == true ? 1 : 0)
+                );
+
+            CreateMap<VMColor, Color>()
+                .ForMember(destino =>
+                destino.EsActivo,
+                opt => opt.MapFrom(origen => origen.esActivo == 1 ? true : false)
+                );
+            #endregion Color
+
+            #region TipoTalle
+            CreateMap<TipoTalle, VMTipoTalle>()
+                .ForMember(destino =>
+                destino.esActivo,
+                opt => opt.MapFrom(origen => origen.EsActivo == true ? 1 : 0)
+                );
+
+            CreateMap<VMTipoTalle, TipoTalle>()
+                .ForMember(destino =>
+                destino.EsActivo,
+                opt => opt.MapFrom(origen => origen.esActivo == 1 ? true : false)
+                );
+            #endregion TipoTalle
+
+            #region Talle
+            CreateMap<Talle, VMTalle>()
+                .ForMember(destino =>
+                destino.esActivo,
+                opt => opt.MapFrom(origen => origen.EsActivo == true ? 1 : 0)
+                );
+
+            CreateMap<VMTalle, Talle>()
+                .ForMember(destino =>
+                destino.EsActivo,
+                opt => opt.MapFrom(origen => origen.esActivo == 1 ? true : false)
+                );
+            #endregion Talle
+
+            #region Articulo
+
+            CreateMap<Articulo, VMArticulo>()
+                .ForMember(destino =>
+                destino.EsActivo,
+                opt => opt.MapFrom(origen => origen.EsActivo == true ? 1 : 0)
+                )
+                .ForMember(destino =>
+                destino.NombreCategoria,
+                opt => opt.MapFrom(origen => origen.IdCategoriaNavigation.Descripcion)
+                )
+                .ForMember(destino =>
+                destino.NombreMarca,
+                opt => opt.MapFrom(origen => origen.IdMarcaNavigation.Descripcion)
+                )
+                .ForMember(destino =>
+                destino.NombreTipoTalle,
+                opt => opt.MapFrom(origen => origen.IdTipoTalleNavigation.Descripcion)
+                )
+                .ForMember(destino =>
+                destino.Costo,
+                opt => opt.MapFrom(origen => Convert.ToString(origen.Costo.Value, new CultureInfo("es-AR")))
+                );
+
+            CreateMap<VMArticulo, Articulo>()
+                .ForMember(destino =>
+                destino.EsActivo,
+                opt => opt.MapFrom(origen => origen.EsActivo == 1 ? true : false)
+                )
+                .ForMember(destino =>
+                destino.IdCategoriaNavigation,
+                opt => opt.Ignore()
+                )
+                .ForMember(destino =>
+                destino.IdMarcaNavigation,
+                opt => opt.Ignore()
+                )
+                .ForMember(destino =>
+                destino.IdTipoTalleNavigation,
+                opt => opt.Ignore()
+                )
+                .ForMember(destino =>
+                destino.Costo,
+                opt => opt.MapFrom(origen => Convert.ToDecimal(origen.Costo, new CultureInfo("es-AR")))
+                );
+            #endregion Articulo
+
+            #region TipoComprobante
+            CreateMap<TipoComprobante, VMTipoComprobante>().ReverseMap();
+            #endregion TipoComprobante
+
+            #region Venta
+            CreateMap<Venta, VMVenta>()
+            .ForMember(destino =>
+            destino.TipoComprobante,
+            opt => opt.MapFrom(origen => origen.IdTipoComprobanteNavigation.Descripcion)
+            )
+            .ForMember(destino =>
+            destino.Usuario,
+            opt => opt.MapFrom(origen => origen.IdUsuarioNavigation.Nombre)
+            )
+            .ForMember(destino =>
+            destino.ImpuestoTotal,
+            opt => opt.MapFrom(origen => Convert.ToString(origen.ImpuestoTotal.Value, new CultureInfo("es-AR")))
+            )
+            .ForMember(destino =>
+            destino.Total,
+            opt => opt.MapFrom(origen => Convert.ToString(origen.Total.Value, new CultureInfo("es-AR")))
+            )
+            .ForMember(destino =>
+            destino.IdPuntoVenta,
+            opt => opt.MapFrom(origen => origen.IdPuntoVentaNavigation.IdPuntoVenta)
+            )
+            .ForMember(destino =>
+            destino.FechaRegistro,
+            opt => opt.MapFrom(origen => origen.FechaRegistro.Value.ToString("dd/MM/yyyy"))
+            );
+
+            CreateMap<VMVenta, Venta>()
+            .ForMember(destino =>
+            destino.ImpuestoTotal,
+            opt => opt.MapFrom(origen => Convert.ToDecimal(origen.ImpuestoTotal, new CultureInfo("es-AR")))
+            )
+            .ForMember(destino =>
+            destino.Total,
+            opt => opt.MapFrom(origen => Convert.ToDecimal(origen.Total, new CultureInfo("es-AR")))
+            );
+            #endregion Venta
+
+            #region DetalleVenta
+            CreateMap<DetalleVenta, VMDetalleVenta>()
+            .ForMember(destino =>
+            destino.Precio,
+            opt => opt.MapFrom(origen => Convert.ToString(origen.Precio.Value, new CultureInfo("es-PE")))
+            )
+            .ForMember(destino =>
+            destino.Total,
+            opt => opt.MapFrom(origen => Convert.ToString(origen.Total.Value, new CultureInfo("es-PE")))
+            );
+
+            CreateMap<VMDetalleVenta, DetalleVenta>()
+            .ForMember(destino =>
+            destino.Precio,
+            opt => opt.MapFrom(origen => Convert.ToDecimal(origen.Precio, new CultureInfo("es-PE")))
+            )
+            .ForMember(destino =>
+            destino.Total,
+            opt => opt.MapFrom(origen => Convert.ToDecimal(origen.Total, new CultureInfo("es-PE")))
+            );
+
+            CreateMap<DetalleVenta, VMReporteVenta>()
+            .ForMember(destino =>
+            destino.FechaRegistro,
+            opt => opt.MapFrom(origen => origen.IdVentaNavigation.FechaRegistro.Value.ToString("dd/MM/yyyy"))
+            )
+            .ForMember(destino =>
+            destino.NumeroVenta,
+            opt => opt.MapFrom(origen => origen.IdVentaNavigation.NumeroVenta)
+            )
+            .ForMember(destino =>
+            destino.TipoComprobante,
+            opt => opt.MapFrom(origen => origen.IdVentaNavigation.IdTipoComprobanteNavigation.Descripcion)
+            )
+            .ForMember(destino =>
+            destino.DocumentoCliente,
+            opt => opt.MapFrom(origen => origen.IdVentaNavigation.IdCliente)
+            )
+            .ForMember(destino =>
+            destino.NombreCliente,
+            opt => opt.MapFrom(origen => origen.IdVentaNavigation.IdClienteNavigation.Nombres)//Puede fallar
+            )
+            .ForMember(destino =>
+            destino.ImpuestoTotalVenta,
+            opt => opt.MapFrom(origen => Convert.ToString(origen.IdVentaNavigation.ImpuestoTotal.Value, new CultureInfo("es-AR")))
+            )
+            .ForMember(destino =>
+            destino.TotalVenta,
+            opt => opt.MapFrom(origen => Convert.ToString(origen.IdVentaNavigation.Total.Value, new CultureInfo("es-AR")))
+            )
+            .ForMember(destino =>
+            destino.Articulo,
+            opt => opt.MapFrom(origen => origen.DescripcionArticulo)
+            )
+            .ForMember(destino =>
+            destino.Precio,
+            opt => opt.MapFrom(origen => Convert.ToString(origen.Precio.Value, new CultureInfo("es-AR")))
+            )
+            .ForMember(destino =>
+            destino.Total,
+            opt => opt.MapFrom(origen => Convert.ToString(origen.Total.Value, new CultureInfo("es-AR")))
+            )
+            ;
+
+            #endregion DetalleVenta
+
+            #region Menu
+            CreateMap<Menu, VMMenu>()
+            .ForMember(destino =>
+            destino.SubMenus,
+            opt => opt.MapFrom(origen => origen.InverseIdMenuPadreNavigation)
+            );
+            #endregion Menu
         }
     }
 }

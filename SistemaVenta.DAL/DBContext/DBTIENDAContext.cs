@@ -254,11 +254,26 @@ namespace SistemaVenta.DAL.DBContext
 
                 entity.Property(e => e.Cantidad).HasColumnName("cantidad");
 
+                entity.Property(e => e.CategoriaArticulo)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("categoriaArticulo");
+
+                entity.Property(e => e.DescripcionArticulo)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("descripcionArticulo");
+
                 entity.Property(e => e.IdInventario).HasColumnName("idInventario");
 
-                entity.Property(e => e.IdProducto).HasColumnName("idProducto");
+                entity.Property(e => e.IdArticulo).HasColumnName("idArticulo");
 
                 entity.Property(e => e.IdVenta).HasColumnName("idVenta");
+
+                entity.Property(e => e.MarcaArticulo)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("marcaArticulo");
 
                 entity.Property(e => e.Precio)
                     .HasColumnType("decimal(10, 2)")

@@ -2,7 +2,7 @@
 {
     public class VMTipoComprobante
     {
-        public int IdTipoDocumentoVenta { get; set; }
+        public int IdTipoComprobante { get; set; }
         public string? Descripcion { get; set; }
 
         //public string? IdCondicionTributaria { get; set; }
