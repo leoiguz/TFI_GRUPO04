@@ -3,11 +3,11 @@ using SistemaVenta.Entity;
 using System.Globalization;
 using AutoMapper;
 
-namespace SistemaVenta.AplicacionWeb.Utilidades.AutomapARr
+namespace SistemaVenta.AplicacionWeb.Utilidades.Automapper
 {
-    public class AutoMapARrProfile : Profile
+    public class AutoMapperProfile : Profile
     {
-        public AutoMapARrProfile() 
+        public AutoMapperProfile() 
         {
             #region Rol
             CreateMap<Rol, VMRol>().ReverseMap();
