@@ -17,13 +17,13 @@ namespace SistemaVenta.BLL.Implementacion
     public class UsuarioService : IUsuarioService
     {
         private readonly IGenericRepository<Usuario> _repositorio;
-        private readonly IFirebaseService _fireBaseService;
+        private readonly IFireBaseService _fireBaseService;
         private readonly IUtilidadesService _utilidadesService;
         private readonly ICorreoService _correoService;
 
         public UsuarioService(
             IGenericRepository<Usuario> repositorio,
-            IFirebaseService fireBaseService,
+            IFireBaseService fireBaseService,
             IUtilidadesService utilidadesService,
             ICorreoService correoService
             )

@@ -29,12 +29,13 @@ namespace SistemaVenta.IOC
             services.AddScoped<IVentaRepository, VentaRepository>();
 
             services.AddScoped<ICorreoService, CorreoService>();
-            services.AddScoped<IFirebaseService, FireBaseService>();
+            services.AddScoped<IFireBaseService, FireBaseService>();
 
             services.AddScoped<IUtilidadesService, UtilidadesService>();
             services.AddScoped<IRolService, RolService>();
 
             services.AddScoped<IUsuarioService, UsuarioService>();
+            services.AddScoped<ISucursalService, SucursalService>();
 
 
         }

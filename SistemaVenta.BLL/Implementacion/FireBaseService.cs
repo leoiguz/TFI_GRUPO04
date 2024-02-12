@@ -13,7 +13,7 @@ using SistemaVenta.DAL.Interfaces;
 
 namespace SistemaVenta.BLL.Implementacion
 {
-    public class FireBaseService : IFirebaseService
+    public class FireBaseService : IFireBaseService
     {
         private readonly IGenericRepository<Configuracion> _repositorio;
 

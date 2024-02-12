@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SistemaVenta.BLL.Interfaces
 {
-    public interface IFirebaseService
+    public interface IFireBaseService
     {
 
         Task<string> SubirStorage(Stream StreamArchivo, string CarpetaDestino, string NombreArchivo);
