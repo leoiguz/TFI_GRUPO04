@@ -95,7 +95,7 @@ namespace SistemaVenta.BLL.Implementacion
                 return usuario_creado;
 
             }
-            catch(Exception ex)
+            catch
             {
                 throw;
             }

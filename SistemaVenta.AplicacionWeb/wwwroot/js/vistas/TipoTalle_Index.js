@@ -1,5 +1,5 @@
 ﻿const MODELO_BASE = {
-    idColor: 0,
+    idTipoTalle: 0,
     descripcion: "",
     esActivo: 1,
 
@@ -12,12 +12,12 @@ $(document).ready(function () {
     tablaData = $('#tbdata').DataTable({
         responsive: true,
         "ajax": {
-            "url": '/Color/Lista',
+            "url": '/TipoTalle/Lista',
             "type": "GET",
             "datatype": "json"
         },
         "columns": [
-            { "data": "idColor", "visible": false, "searchable": false },
+            { "data": "idTipoTalle", "visible": false, "searchable": false },
             { "data": "descripcion" },
             { "data": "esActivo", render: function (data) { if (data == 1) return '<span class="badge badge-info">Activo</span>'; else return '<span class="badge badge-danger">No Activo</span>'; } },
             {
@@ -35,7 +35,7 @@ $(document).ready(function () {
                 text: 'Exportar Excel',
                 extend: 'excelHtml5',
                 title: '',
-                filename: 'Reporte Colors',
+                filename: 'Reporte TipoTalles',
                 exportOptions: {
                     columns: [1, 2]
                 }
@@ -48,7 +48,7 @@ $(document).ready(function () {
 })
 
 function mostrarModal(modelo = MODELO_BASE) {
-    $("#txtId").val(modelo.idColor)
+    $("#txtId").val(modelo.idTipoTalle)
     $("#txtDescripcion").val(modelo.descripcion)
     $("#cboEstado").val(modelo.esActivo)
 
@@ -67,14 +67,14 @@ $("#btnGuardar").click(function () {
     }
 
     const modelo = structuredClone(MODELO_BASE);
-    modelo["idColor"] = parseInt($("#txtId").val())
+    modelo["idTipoTalle"] = parseInt($("#txtId").val())
     modelo["descripcion"] = $("#txtDescripcion").val()
     modelo["esActivo"] = $("#cboEstado").val()
 
     $("#modalData").find("div.modal-content").LoadingOverlay("show");
 
-    if (modelo.idColor == 0) {
-        fetch("/Color/Crear", {
+    if (modelo.idTipoTalle == 0) {
+        fetch("/TipoTalle/Crear", {
             method: "POST",
             headers: { "Content-Type": "application/json; charset=utf-8" },
             body: JSON.stringify(modelo)
@@ -88,13 +88,13 @@ $("#btnGuardar").click(function () {
 
                     tablaData.row.add(responseJson.objeto).draw(false)
                     $("#modalData").modal("hide")
-                    swal("Listo!", "El color fue creado", "success")
+                    swal("Listo!", "El tipo de talle fue creado", "success")
                 } else {
                     swal("Lo sentimos", responseJson.mensaje, "error")
                 }
             })
     } else {
-        fetch("/Color/Editar", {
+        fetch("/TipoTalle/Editar", {
             method: "PUT",
             headers: { "Content-Type": "application/json; charset=utf-8" },
             body: JSON.stringify(modelo)
@@ -108,7 +108,7 @@ $("#btnGuardar").click(function () {
                     tablaData.row(filaSeleccionada).data(responseJson.objeto).draw(false)
                     filaSeleccionada = null;
                     $("#modalData").modal("hide")
-                    swal("Listo!", "El color fue modificado", "success")
+                    swal("Listo!", "El tipo de talle fue modificado", "success")
                 } else {
                     swal("Lo sentimos", responseJson.mensaje, "error")
                 }
@@ -147,7 +147,7 @@ $("#tbdata tbody").on("click", ".btn-eliminar", function () {
 
     swal({
         title: "¿Esta seguro?",
-        text: `Eliminar el color "${data.descripcion}"`,
+        text: `Eliminar el tipo de talle "${data.descripcion}"`,
         type: "warning",
         showCancelButton: true,
         confirmButtonClass: "btn-danger",
@@ -160,7 +160,7 @@ $("#tbdata tbody").on("click", ".btn-eliminar", function () {
             if (respuesta) {
                 $(".showSweetAlert").LoadingOverlay("show");
 
-                fetch(`/Color/Eliminar?IdColor=${data.idColor}`, {
+                fetch(`/TipoTalle/Eliminar?IdTipoTalle=${data.idTipoTalle}`, {
                     method: "DELETE",
                 })
                     .then(response => {
@@ -172,7 +172,7 @@ $("#tbdata tbody").on("click", ".btn-eliminar", function () {
 
                             tablaData.row(fila).remove().draw()
 
-                            swal("Listo!", "El color fue eliminado", "success")
+                            swal("Listo!", "El tipo talle fue eliminado", "success")
                         } else {
                             swal("Lo sentimos", responseJson.mensaje, "error")
                         }
