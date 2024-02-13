@@ -1,6 +1,6 @@
 ﻿
 @{
-    ViewData["Title"] = "Articulo";
+    ViewData["Title"] = "Inventario";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -8,20 +8,20 @@
     <!-- ============================================================
         =ESTILOS PARA ESTA PAGINA
         ===============================================================-->
-        <link rel="stylesheet" href="~/vendor/datatables/dataTables.bootstrap4.min.css">
-        <link rel="stylesheet" href="~/vendor/datatables/extensiones/css/responsive.dataTables.min.css">
-        <link rel="stylesheet" href="~/vendor/datatables/extensiones/css/buttons.dataTables.min.css">
+    <link rel="stylesheet" href="~/vendor/datatables/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/vendor/datatables/extensiones/css/responsive.dataTables.min.css">
+    <link rel="stylesheet" href="~/vendor/datatables/extensiones/css/buttons.dataTables.min.css">
 }
 
 <!-- DataTales Example -->
 <div class="card shadow mb-4">
     <div class="card-header py-3 bg-second-primary">
-        <h6 class="m-0 font-weight-bold text-white">Lista de Articulos</h6>
+        <h6 class="m-0 font-weight-bold text-white">Lista de Inventario</h6>
     </div>
     <div class="card-body">
         <div class="row">
             <div class="col-sm-3">
-                <button class="btn btn-success" id="btnNuevo"><i class="fas fa-plus-circle"></i> Nuevo Articulo</button>
+                <button class="btn btn-success" id="btnNuevo"><i class="fas fa-plus-circle"></i> Nuevo Inventario</button>
             </div>
         </div>
         <hr />
@@ -31,18 +31,15 @@
                     <thead>
                         <tr>
                             <th>Id</th>
-                            <th>Codigo Barra</th>
-                            <th>Marca</th>
-                            <th>Tipo Talle</th>
-                            <th>Descripcion</th>
-                            <th>Categoria</th>
-                            <th>Costo</th>
+                            <th>Cantidad</th>
+                            <th>Articulo</th>
+                            <th>Color</th>
+                            <th>Talle</th>
                             <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-
                     </tbody>
                 </table>
             </div>
@@ -55,7 +52,7 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h6>Detalle Articulo</h6>
+                <h6>Detalle Inventario</h6>
                 <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
@@ -67,40 +64,30 @@
                         <div class="col-sm-8">
                             <div class="form-row">
                                 <div class="form-group col-sm-6">
-                                    <label for="txtCodigoBarra">Codigo Barra</label>
-                                    <input type="text" class="form-control form-control-sm input-validar" id="txtCodigoBarra" name="Codigo Barra">
+                                    <label for="txtCantidad">Cantidad</label>
+                                    <input type="text" class="form-control form-control-sm input-validar" id="txtCantidad" name="Cantidad">
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-group col-sm-6">
-                                    <label for="cboMarca">Marca</label>
-                                    <select class="form-control form-control-sm" id="cboMarca">
+                                    <label for="cboArticulo">Articulo</label>
+                                    <select class="form-control form-control-sm" id="cboArticulo">
                                     </select>
                                 </div>
                                 <div class="form-group col-sm-6">
-                                    <label for="cboTipoTalle">Tipo Talle</label>
-                                    <select class="form-control form-control-sm" id="cboTipoTalle">
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group col-sm-12">
-                                    <label for="txtDescripcion">Descripcion</label>
-                                    <input type="text" class="form-control form-control-sm input-validar" id="txtDescripcion" name="Descripcion">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group col-sm-6">
-                                    <label for="cboCategoria">Categoria</label>
-                                    <select class="form-control form-control-sm" id="cboCategoria">
+                                    <label for="cboColor">Color</label>
+                                    <select class="form-control form-control-sm" id="cboColor">
                                     </select>
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-group col-sm-6">
-                                    <label for="txtCosto">Costo</label>
-                                    <input type="text" class="form-control form-control-sm input-validar" id="txtCosto" name="Costo">
+                                    <label for="cboTalle">Talle</label>
+                                    <select class="form-control form-control-sm" id="cboTalle">
+                                    </select>
                                 </div>
+                            </div>
+                            <div class="form-row">
                                 <div class="form-group col-sm-6">
                                     <label for="cboEstado">Estado</label>
                                     <select class="form-control form-control-sm" id="cboEstado">
@@ -136,5 +123,6 @@
     <script src="~/vendor/datatables/extensiones/js/buttons.html5.min.js"></script>
     <script src="~/vendor/datatables/extensiones/js/buttons.print.min.js"></script>
 
-    <script src="~/js/vistas/Articulo_Index.js"></script>
+    <script src="~/js/vistas/Inventario_Index.js"></script>
 }
+

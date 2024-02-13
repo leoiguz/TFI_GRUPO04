@@ -8,15 +8,15 @@ using SistemaVenta.Entity;
 
 namespace SistemaVenta.AplicacionWeb.Controllers
 {
-    public class TalleController : Controller
+    public class InventarioController : Controller
     {
         private readonly IMapper _mapper;
-        private readonly ITalleService _talleServicio;
+        private readonly IInventarioService _inventarioServicio;
 
-        public TalleController(IMapper mapper, ITalleService talleServicio)
+        public InventarioController(IMapper mapper, IInventarioService inventarioServicio)
         {
             _mapper = mapper;
-            _talleServicio = talleServicio;
+            _inventarioServicio = inventarioServicio;
         }
         public IActionResult Index()
         {
@@ -26,24 +26,24 @@ namespace SistemaVenta.AplicacionWeb.Controllers
         [HttpGet]
         public async Task<IActionResult> Lista()
         {
-            List<VMTalle> vmTalleLista = _mapper.Map<List<VMTalle>>(await _talleServicio.Lista());
-            return StatusCode(StatusCodes.Status200OK, new { data = vmTalleLista });
+            List<VMInventario> vmInventarioLista = _mapper.Map<List<VMInventario>>(await _inventarioServicio.Lista());
+            return StatusCode(StatusCodes.Status200OK, new { data = vmInventarioLista });
         }
 
         [HttpPost]
         public async Task<IActionResult> Crear([FromForm] string modelo)
         {
-            GenericResponse<VMTalle> gResponse = new GenericResponse<VMTalle>();
+            GenericResponse<VMInventario> gResponse = new GenericResponse<VMInventario>();
             try
             {
-                VMTalle vMTalle = JsonConvert.DeserializeObject<VMTalle>(modelo);
+                VMInventario vMInventario = JsonConvert.DeserializeObject<VMInventario>(modelo);
 
-                Talle talle_creado = await _talleServicio.Crear(_mapper.Map<Talle>(vMTalle));
+                Inventario inventario_creado = await _inventarioServicio.Crear(_mapper.Map<Inventario>(vMInventario));
 
-                vMTalle = _mapper.Map<VMTalle>(talle_creado);
+                vMInventario = _mapper.Map<VMInventario>(inventario_creado);
 
                 gResponse.Estado = true;
-                gResponse.Objeto = vMTalle;
+                gResponse.Objeto = vMInventario;
             }
             catch (Exception ex)
             {
@@ -58,17 +58,17 @@ namespace SistemaVenta.AplicacionWeb.Controllers
         [HttpPut]
         public async Task<IActionResult> Editar([FromForm] string modelo)
         {
-            GenericResponse<VMTalle> gResponse = new GenericResponse<VMTalle>();
+            GenericResponse<VMInventario> gResponse = new GenericResponse<VMInventario>();
             try
             {
-                VMTalle vMTalle = JsonConvert.DeserializeObject<VMTalle>(modelo);
+                VMInventario vMInventario = JsonConvert.DeserializeObject<VMInventario>(modelo);
 
-                Talle talle_editado = await _talleServicio.Editar(_mapper.Map<Talle>(vMTalle));
+                Inventario inventario_editado = await _inventarioServicio.Editar(_mapper.Map<Inventario>(vMInventario));
 
-                vMTalle = _mapper.Map<VMTalle>(talle_editado);
+                vMInventario = _mapper.Map<VMInventario>(inventario_editado);
 
                 gResponse.Estado = true;
-                gResponse.Objeto = vMTalle;
+                gResponse.Objeto = vMInventario;
             }
             catch (Exception ex)
             {
@@ -80,14 +80,14 @@ namespace SistemaVenta.AplicacionWeb.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> Eliminar(int IdTalle)
+        public async Task<IActionResult> Eliminar(int IdInventario)
         {
             GenericResponse<string> gResponse = new GenericResponse<string>();
 
             try
             {
 
-                gResponse.Estado = await _talleServicio.Eliminar(IdTalle);
+                gResponse.Estado = await _inventarioServicio.Eliminar(IdInventario);
             }
             catch (Exception ex)
             {

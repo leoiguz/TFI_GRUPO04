@@ -110,13 +110,22 @@ namespace SistemaVenta.AplicacionWeb.Utilidades.Automapper
                 .ForMember(destino =>
                 destino.esActivo,
                 opt => opt.MapFrom(origen => origen.EsActivo == true ? 1 : 0)
+                )
+                .ForMember(destino =>
+                destino.NombreTipoTalle,
+                opt => opt.MapFrom(origen => origen.IdTipoTalleNavigation.Descripcion)
                 );
 
             CreateMap<VMTalle, Talle>()
                 .ForMember(destino =>
                 destino.EsActivo,
                 opt => opt.MapFrom(origen => origen.esActivo == 1 ? true : false)
+                )
+                .ForMember(destino =>
+                destino.IdTipoTalleNavigation,
+                opt => opt.Ignore()
                 );
+
             #endregion Talle
 
             #region Articulo
@@ -165,6 +174,52 @@ namespace SistemaVenta.AplicacionWeb.Utilidades.Automapper
                 opt => opt.MapFrom(origen => Convert.ToDecimal(origen.Costo, new CultureInfo("es-AR")))
                 );
             #endregion Articulo
+
+            #region Inventario
+            CreateMap<Inventario, VMInventario>()
+                .ForMember(destino =>
+                destino.EsActivo,
+                opt => opt.MapFrom(origen => origen.EsActivo == true ? 1 : 0)
+                )
+                .ForMember(destino =>
+                destino.NombreArticulo,
+                opt => opt.MapFrom(origen => origen.IdArticuloNavigation.Descripcion)
+                )
+                .ForMember(destino =>
+                destino.NombreColor,
+                opt => opt.MapFrom(origen => origen.IdColorNavigation.Descripcion)
+                )
+                .ForMember(destino =>
+                destino.NombreTalle,
+                opt => opt.MapFrom(origen => origen.IdTalleNavigation.Descripcion)
+                )
+                .ForMember(destino =>
+                destino.Cantidad,
+                opt => opt.MapFrom(origen => Convert.ToString(origen.Cantidad.Value, new CultureInfo("es-AR")))
+                );
+
+            CreateMap<VMInventario, Inventario>()
+                .ForMember(destino =>
+                destino.EsActivo,
+                opt => opt.MapFrom(origen => origen.EsActivo == 1 ? true : false)
+                )
+                .ForMember(destino =>
+                destino.IdArticuloNavigation,
+                opt => opt.Ignore()
+                )
+                .ForMember(destino =>
+                destino.IdColorNavigation,
+                opt => opt.Ignore()
+                )
+                .ForMember(destino =>
+                destino.IdTalleNavigation,
+                opt => opt.Ignore()
+                )
+                .ForMember(destino =>
+                destino.Cantidad,
+                opt => opt.MapFrom(origen => Convert.ToInt32(origen.Cantidad, new CultureInfo("es-AR")))
+                );
+            #endregion Inventario
 
             #region TipoComprobante
             CreateMap<TipoComprobante, VMTipoComprobante>().ReverseMap();
