@@ -21,7 +21,7 @@
     <div class="card-body">
         <div class="row">
             <div class="col-sm-3">
-                <button class="btn btn-success" data-toggle="modal" data-target="#modalData"><i class="fas fa-plus-circle"></i> Nuevo Producto</button>
+                <button class="btn btn-success" id="btnNuevo"><i class="fas fa-plus-circle"></i> Nuevo Producto</button>
             </div>
         </div>
         <hr />
@@ -33,6 +33,7 @@
                             <th>Id</th>
                             <th>Codigo Barra</th>
                             <th>Marca</th>
+                            <th>Tipo Talle</th>
                             <th>Descripcion</th>
                             <th>Categoria</th>
                             <th>Costo</th>
@@ -41,40 +42,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>1</td>                          
-                            <td>12312312</td>
-                            <td>Marca 1</td>
-                            <td>Descripcion 1</td>
-                            <td>Categoria 1</td>
-                            <td>120</td>
-                            <td><span class="badge badge-info">Activo</span></td>
-                            <td>
-                                <button class="btn btn-primary btn-sm">
-                                    <i class="fas fa-pencil-alt"></i>
-                                </button>
-                                <button class="btn btn-danger btn-sm">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>12312312</td>
-                            <td>Marca 2</td>
-                            <td>Descripcion 2</td>
-                            <td>Categoria 2</td>
-                            <td>140</td>
-                            <td><span class="badge badge-danger">No Activo</span></td>
-                            <td>
-                                <button class="btn btn-primary btn-sm">
-                                    <i class="fas fa-pencil-alt"></i>
-                                </button>
-                                <button class="btn btn-danger btn-sm">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </td>
-                        </tr>
+
                     </tbody>
                 </table>
             </div>
@@ -102,10 +70,16 @@
                                     <label for="txtCodigoBarra">Codigo Barra</label>
                                     <input type="text" class="form-control form-control-sm input-validar" id="txtCodigoBarra" name="Codigo Barra">
                                 </div>
+                            </div>
+                            <div class="form-row">
                                 <div class="form-group col-sm-6">
-                                    <label for="txtMarca">Marca</label>
+                                    <label for="cboMarca">Marca</label>
                                     <select class="form-control form-control-sm" id="cboMarca">
-                                        <option value="0">seleccionar</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-sm-6">
+                                    <label for="cboTipoTalle">Tipo Talle</label>
+                                    <select class="form-control form-control-sm" id="cboTipoTalle">
                                     </select>
                                 </div>
                             </div>
@@ -119,13 +93,12 @@
                                 <div class="form-group col-sm-6">
                                     <label for="cboCategoria">Categoria</label>
                                     <select class="form-control form-control-sm" id="cboCategoria">
-                                        <option value="0">seleccionar</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-group col-sm-6">
-                                    <label for="txtPrecio">Costo</label>
+                                    <label for="txtCosto">Costo</label>
                                     <input type="text" class="form-control form-control-sm input-validar" id="txtCosto" name="Costo">
                                 </div>
                                 <div class="form-group col-sm-6">
@@ -163,6 +136,5 @@
     <script src="~/vendor/datatables/extensiones/js/buttons.html5.min.js"></script>
     <script src="~/vendor/datatables/extensiones/js/buttons.print.min.js"></script>
 
-    <!-- SOLO ES DE EJEMPLO - IGNORAR -->
-    <script src="js/vistas/datatables-demo.js"></script>
+    <script src="~/js/vistas/Articulo_Index.js"></script>
 }

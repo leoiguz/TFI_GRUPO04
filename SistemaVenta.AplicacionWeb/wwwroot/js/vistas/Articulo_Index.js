@@ -1,7 +1,12 @@
 ﻿const MODELO_BASE = {
+    idArticulo: 0,
+    codigoBarra: "",
     idMarca: 0,
+    idTipoTalle: 0,
     descripcion: "",
-    esActivo: 1,
+    idCategoria: 0,
+    costo: 0,
+    esActivo: 1
 
 }
 
@@ -9,16 +14,61 @@ let tablaData;
 
 $(document).ready(function () {
 
+    fetch("/Categoria/Lista")
+        .then(response => {
+            return response.ok ? response.json() : Promise.reject(response);
+        })
+        .then(responseJson => {
+            if (responseJson.data.length > 0) {
+                responseJson.data.forEach((item) => {
+                    $("#cboCategoria").append(
+                        $("<option>").val(item.idCategoria).text(item.descripcion)
+                    )
+                })
+            }
+        })
+    fetch("/TipoTalle/Lista")
+        .then(response => {
+            return response.ok ? response.json() : Promise.reject(response);
+        })
+        .then(responseJson => {
+            if (responseJson.data.length > 0) {
+                responseJson.data.forEach((item) => {
+                    $("#cboTipoTalle").append(
+                        $("<option>").val(item.idTipoTalle).text(item.descripcion)
+                    )
+                })
+            }
+        })
+    fetch("/Marca/Lista")
+        .then(response => {
+            return response.ok ? response.json() : Promise.reject(response);
+        })
+        .then(responseJson => {
+            if (responseJson.data.length > 0) {
+                responseJson.data.forEach((item) => {
+                    $("#cboMarca").append(
+                        $("<option>").val(item.idMarca).text(item.descripcion)
+                    )
+                })
+            }
+        })
+
     tablaData = $('#tbdata').DataTable({
         responsive: true,
         "ajax": {
-            "url": '/Marca/Lista',
+            "url": '/Articulo/Lista',
             "type": "GET",
             "datatype": "json"
         },
         "columns": [
-            { "data": "idMarca", "visible": false, "searchable": false },
+            { "data": "idArticulo", "visible": false, "searchable": false },
+            { "data": "codigoBarra" },
+            { "data": "nombreMarca" },
+            { "data": "nombreTipoTalle" },
             { "data": "descripcion" },
+            { "data": "nombreCategoria" },
+            { "data": "costo" },
             { "data": "esActivo", render: function (data) { if (data == 1) return '<span class="badge badge-info">Activo</span>'; else return '<span class="badge badge-danger">No Activo</span>'; } },
             {
                 "defaultContent": '<button class="btn btn-primary btn-editar btn-sm mr-2"><i class="fas fa-pencil-alt"></i></button>' +
@@ -35,9 +85,9 @@ $(document).ready(function () {
                 text: 'Exportar Excel',
                 extend: 'excelHtml5',
                 title: '',
-                filename: 'Reporte Marcas',
+                filename: 'Reporte Articulos',
                 exportOptions: {
-                    columns: [1, 2]
+                    columns: [2, 3, 4, 5, 6]
                 }
             }, 'pageLength'
         ],
@@ -48,10 +98,14 @@ $(document).ready(function () {
 })
 
 function mostrarModal(modelo = MODELO_BASE) {
-    $("#txtId").val(modelo.idMarca)
+    $("#txtId").val(modelo.idArticulo)
+    $("#txtCodigoBarra").val(modelo.codigoBarra)
+    $("#cboMarca").val(modelo.idMarca == 0 ? $("#cboMarca option:first").val() : modelo.idMarca)
+    $("#cboTipoTalle").val(modelo.idTipoTalle == 0 ? $("#cboTipoTalle option:first").val() : modelo.idTipoTalle)
     $("#txtDescripcion").val(modelo.descripcion)
+    $("#cboCategoria").val(modelo.idCategoria == 0 ? $("#cboCategoria option:first").val() : modelo.idCategoria)
+    $("#txtCosto").val(modelo.costo)
     $("#cboEstado").val(modelo.esActivo)
-
     $("#modalData").modal("show")
 }
 
@@ -60,24 +114,37 @@ $("#btnNuevo").click(function () {
 })
 
 $("#btnGuardar").click(function () {
-    if ($("#txtDescripcion").val().trim() == "") {
-        toastr.warning("", "Debe completar el campo : descripcion")
-        $("#txtDescripcion").focus()
+
+    const inputs = $("input.input-validar").serializeArray();
+    const inputs_sin_valor = inputs.filter((item) => item.value.trim() == "")
+
+    if (inputs_sin_valor.length > 0) {
+        const mensaje = `Debe completar el campo : "${inputs_sin_valor[0].name}"`;
+        toastr.warning("", mensaje)
+        $(`input[name="${inputs_sin_valor[0].name}"]`).focus()
         return;
     }
 
     const modelo = structuredClone(MODELO_BASE);
-    modelo["idMarca"] = parseInt($("#txtId").val())
+    modelo["idArticulo"] = parseInt($("#txtId").val())
+    modelo["codigoBarra"] = $("#txtCodigoBarra").val()
+    modelo["idMarca"] = $("#cboMarca").val()
+    modelo["idTipoTalle"] = $("#cboTipoTalle").val()
     modelo["descripcion"] = $("#txtDescripcion").val()
+    modelo["idCategoria"] = $("#cboCategoria").val()
+    modelo["costo"] = $("#txtCosto").val()
     modelo["esActivo"] = $("#cboEstado").val()
+
+    const formData = new FormData();
+
+    formData.append("modelo", JSON.stringify(modelo))
 
     $("#modalData").find("div.modal-content").LoadingOverlay("show");
 
-    if (modelo.idMarca == 0) {
-        fetch("/Marca/Crear", {
+    if (modelo.idArticulo == 0) {
+        fetch("/Articulo/Crear", {
             method: "POST",
-            headers: { "Content-Type": "application/json; charset=utf-8" },
-            body: JSON.stringify(modelo)
+            body: formData
         })
             .then(response => {
                 $("#modalData").find("div.modal-content").LoadingOverlay("hide");
@@ -85,19 +152,17 @@ $("#btnGuardar").click(function () {
             })
             .then(responseJson => {
                 if (responseJson.estado) {
-
                     tablaData.row.add(responseJson.objeto).draw(false)
                     $("#modalData").modal("hide")
-                    swal("Listo!", "La marca fue creada", "success")
+                    swal("Listo!", "El articulo fue creado", "success")
                 } else {
                     swal("Lo sentimos", responseJson.mensaje, "error")
                 }
             })
     } else {
-        fetch("/Marca/Editar", {
+        fetch("/Articulo/Editar", {
             method: "PUT",
-            headers: { "Content-Type": "application/json; charset=utf-8" },
-            body: JSON.stringify(modelo)
+            body: formData
         })
             .then(response => {
                 $("#modalData").find("div.modal-content").LoadingOverlay("hide");
@@ -108,7 +173,7 @@ $("#btnGuardar").click(function () {
                     tablaData.row(filaSeleccionada).data(responseJson.objeto).draw(false)
                     filaSeleccionada = null;
                     $("#modalData").modal("hide")
-                    swal("Listo!", "La marca fue modificada", "success")
+                    swal("Listo!", "El articulo fue modificado", "success")
                 } else {
                     swal("Lo sentimos", responseJson.mensaje, "error")
                 }
@@ -147,7 +212,7 @@ $("#tbdata tbody").on("click", ".btn-eliminar", function () {
 
     swal({
         title: "¿Esta seguro?",
-        text: `Eliminar la marca "${data.descripcion}"`,
+        text: `Eliminar el articulo "${data.descripcion}"`,
         type: "warning",
         showCancelButton: true,
         confirmButtonClass: "btn-danger",
@@ -160,7 +225,7 @@ $("#tbdata tbody").on("click", ".btn-eliminar", function () {
             if (respuesta) {
                 $(".showSweetAlert").LoadingOverlay("show");
 
-                fetch(`/Marca/Eliminar?IdMarca=${data.idMarca}`, {
+                fetch(`/Articulo/Eliminar?IdArticulo=${data.idArticulo}`, {
                     method: "DELETE",
                 })
                     .then(response => {
@@ -169,10 +234,8 @@ $("#tbdata tbody").on("click", ".btn-eliminar", function () {
                     })
                     .then(responseJson => {
                         if (responseJson.estado) {
-
                             tablaData.row(fila).remove().draw()
-
-                            swal("Listo!", "La marca fue eliminada", "success")
+                            swal("Listo!", "El articulo fue eliminado", "success")
                         } else {
                             swal("Lo sentimos", responseJson.mensaje, "error")
                         }
