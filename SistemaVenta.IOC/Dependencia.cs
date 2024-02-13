@@ -43,6 +43,8 @@ namespace SistemaVenta.IOC
             services.AddScoped<IArticuloService, ArticuloService>();
             services.AddScoped<ITalleService, TalleService>();
             services.AddScoped<IInventarioService, InventarioService>();
+            services.AddScoped<IClienteService, ClienteService>();
+            services.AddScoped<ICondicionTributariaService, CondicionTributariaService>();
 
 
         }

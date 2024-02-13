@@ -91,6 +91,20 @@ namespace SistemaVenta.AplicacionWeb.Utilidades.Automapper
                 );
             #endregion Color
 
+            #region CondicionTributaria
+            CreateMap<CondicionTributaria, VMCondicionTributaria>()
+                .ForMember(destino =>
+                destino.esActivo,
+                opt => opt.MapFrom(origen => origen.EsActivo == true ? 1 : 0)
+                );
+
+            CreateMap<VMCondicionTributaria, CondicionTributaria>()
+                .ForMember(destino =>
+                destino.EsActivo,
+                opt => opt.MapFrom(origen => origen.esActivo == 1 ? true : false)
+                );
+            #endregion CondicionTributaria
+
             #region TipoTalle
             CreateMap<TipoTalle, VMTipoTalle>()
                 .ForMember(destino =>
@@ -220,6 +234,29 @@ namespace SistemaVenta.AplicacionWeb.Utilidades.Automapper
                 opt => opt.MapFrom(origen => Convert.ToInt32(origen.Cantidad, new CultureInfo("es-AR")))
                 );
             #endregion Inventario
+
+            #region Cliente
+
+            CreateMap<Cliente, VMCliente>()
+                .ForMember(destino =>
+                destino.EsActivo,
+                opt => opt.MapFrom(origen => origen.EsActivo == true ? 1 : 0)
+                )
+                .ForMember(destino =>
+                destino.NombreCondicionTributaria,
+                opt => opt.MapFrom(origen => origen.IdCondicionTributariaNavigation.Nombre)
+                );
+
+            CreateMap<VMCliente, Cliente>()
+                .ForMember(destino =>
+                destino.EsActivo,
+                opt => opt.MapFrom(origen => origen.EsActivo == 1 ? true : false)
+                )
+                .ForMember(destino =>
+                destino.IdCondicionTributariaNavigation,
+                opt => opt.Ignore()
+                );
+            #endregion Cliente
 
             #region TipoComprobante
             CreateMap<TipoComprobante, VMTipoComprobante>().ReverseMap();
