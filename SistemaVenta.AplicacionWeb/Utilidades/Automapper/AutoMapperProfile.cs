@@ -210,6 +210,10 @@ namespace SistemaVenta.AplicacionWeb.Utilidades.Automapper
                 .ForMember(destino =>
                 destino.Cantidad,
                 opt => opt.MapFrom(origen => Convert.ToString(origen.Cantidad.Value, new CultureInfo("es-AR")))
+                )
+                .ForMember(destino =>
+                destino.PrecioArticulo,
+                opt => opt.MapFrom(origen => Convert.ToString(origen.IdArticuloNavigation.Costo.Value, new CultureInfo("es-AR")))
                 );
 
             CreateMap<VMInventario, Inventario>()

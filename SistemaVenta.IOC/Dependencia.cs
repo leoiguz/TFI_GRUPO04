@@ -13,6 +13,7 @@ using SistemaVenta.DAL.Interfaces;
 using SistemaVenta.DAL.Implementacion;
 using SistemaVenta.BLL.Interfaces;
 using SistemaVenta.BLL.Implementacion;
+using SistemaVenta.Entity;
 
 namespace SistemaVenta.IOC
 {
@@ -45,6 +46,8 @@ namespace SistemaVenta.IOC
             services.AddScoped<IInventarioService, InventarioService>();
             services.AddScoped<IClienteService, ClienteService>();
             services.AddScoped<ICondicionTributariaService, CondicionTributariaService>();
+            services.AddScoped<ITipoComprobanteService, TipoComprobanteService>();
+            services.AddScoped<IVentaService, VentaService>();
 
 
         }

@@ -10,7 +10,8 @@ namespace SistemaVenta.BLL.Interfaces
 {
 	public interface IVentaService
 	{
-		Task<List<Articulo>> ObtenerArticulos(string busqueda);
+		Task<List<Inventario>> ObtenerInventario(string busqueda);
+		Task<List<Cliente>> ObtenerCliente(string busqueda);
 		Task<Venta> Registrar(Venta entidad);
 		Task<List<Venta>> Historial(string numeroVenta, string fechaInicio, string fechaFin);
 		Task<Venta> Detalle(string numeroVenta);

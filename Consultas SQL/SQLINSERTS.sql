@@ -46,3 +46,9 @@ select * from Sucursal
 insert into Sucursal(idSucursal,numeroDocumento,nombre,correo,domicilio,ciudad,telefono,porcentajeImpuesto,simboloMoneda)
 values(1,'12346','centro','test@email.com','Tucuman','San Miguel','423564',2,'$')
 
+insert into CondicionTributaria(nombre,esActivo) values
+('RI',1),
+('M',1),
+('E',1),
+('NR',1),
+('CF',1)

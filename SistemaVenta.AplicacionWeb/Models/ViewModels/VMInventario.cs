@@ -11,5 +11,6 @@
         public string? IdTalle { get; set; }
         public string? NombreTalle { get; set; }
         public int? EsActivo { get; set; }
+        public decimal? PrecioArticulo { get; set; }
     }
 }

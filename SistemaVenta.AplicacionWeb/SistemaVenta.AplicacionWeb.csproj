@@ -8,14 +8,17 @@
 
   <ItemGroup>
     <Content Remove="wwwroot\js\vistas\Categoria_Index.js" />
+    <Content Remove="wwwroot\js\vistas\Nueva_Venta.js" />
   </ItemGroup>
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="wwwroot\js\vistas\Categoria_Index.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\vistas\Nueva_Venta.js" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="wwwroot\js\vistas\Categoria_Index.js" />
+    <None Include="wwwroot\js\vistas\Nueva_Venta.js" />
   </ItemGroup>
 
   <ItemGroup>
