@@ -31,9 +31,9 @@ namespace SistemaVenta.BLL.Implementacion
         public async Task<List<Inventario>> ObtenerInventario(string busqueda)
         {
             IQueryable<Inventario> querry = await _repositorioInventario.Consultar(
-                p => p.EsActivo == true &&
-                p.Cantidad > 0 &&
-                string.Concat("").Contains(busqueda)
+                i => i.EsActivo == true &&
+                i.Cantidad > 0 &&
+                i.IdArticuloNavigation.CodigoBarra.Contains(busqueda)
                 );
 
             return querry.Include(c => c.IdArticuloNavigation).

@@ -1,5 +1,5 @@
-﻿
-let ValorImpuesto = 0;
+﻿let ValorImpuesto = 0;
+
 $(document).ready(function () {
 
 
@@ -18,7 +18,6 @@ $(document).ready(function () {
         })
 
 
-
     fetch("/Sucursal/Obtener")
         .then(response => {
             return response.ok ? response.json() : Promise.reject(response);
@@ -29,7 +28,7 @@ $(document).ready(function () {
 
                 const d = responseJson.objeto;
 
-                //console.log(d)
+                console.log(d)
 
                 $("#inputGroupSubTotal").text(`Sub total - ${d.simboloMoneda}`)
                 $("#inputGroupIGV").text(`IGV(${d.porcentajeImpuesto}%) - ${d.simboloMoneda}`)
@@ -57,6 +56,7 @@ $(document).ready(function () {
                     results: data.map((item) => (
                         {
                             id: item.idInventario,
+
                             articulo: item.nombreArticulo,
                             color: item.nombreColor,
                             talle: item.nombreTalle,
@@ -72,8 +72,6 @@ $(document).ready(function () {
         templateResult: formatoResultados
     });
 
-
-
 })
 
 function formatoResultados(data) {
@@ -84,7 +82,9 @@ function formatoResultados(data) {
         `<table width="100%">
             <tr>
                 <td>
-                    <p style="font-weight: bolder;margin:2px">${data.nombreArticulo}</p>
+                    <p style="font-weight: bolder;margin:2px">${data.articulo}</p>
+                    <p style="margin:2px">${data.color}</p>
+                    <p style="margin:2px">${data.talle}</p>
                 </td>
             </tr>
          </table>`
@@ -109,7 +109,7 @@ $("#cboBuscarInventario").on("select2:select", function (e) {
     }
 
     swal({
-        title: data.nombreArticulo,
+        title: data.articulo,
         type: "input",
         showCancelButton: true,
         closeOnConfirm: false,
@@ -129,14 +129,13 @@ $("#cboBuscarInventario").on("select2:select", function (e) {
             }
 
             let inventario = {
-                idInventario: data.idInventario,
+                idInventario: data.id,  
                 articuloInventario: data.articulo,
                 colorInventario: data.color,
                 talleInventario: data.talle,
                 cantidad: parseInt(valor),
                 precio: data.precio.toString(),
                 total: (parseFloat(valor) * data.precio).toString()
-
             }
 
             InventariosParaVenta.push(inventario)
@@ -169,8 +168,10 @@ function mostrarInventario_Precios() {
                         $("<i>").addClass("fas fa-trash-alt")
                     ).data("idInventario", item.idInventario)
                 ),
-                $("<td>").text(item.articulo),
-                $("<td>").text(item.cantidad),
+                $("<td>").text(item.cantidad),               
+                $("<td>").text(item.articuloInventario),
+                $("<td>").text(item.colorInventario),
+                $("<td>").text(item.talleInventario),
                 $("<td>").text(item.precio),
                 $("<td>").text(item.total)
             )
@@ -208,10 +209,10 @@ $("#btnTerminarVenta").click(function () {
 
     const venta = {
         idTipoComprobante: $("#cboTipoComprobante").val(),
-        documentoCliente: $("#txtDocumentoCliente").val(),
-        nombreCliente: $("#txtNombreCliente").val(),
+        //documentoCliente: $("#txtDocumentoCliente").val(),
+        //nombreCliente: $("#txtNombreCliente").val(),
         subTotal: $("#txtSubTotal").val(),
-        impuestoTotal: $("#txtIGV").val(),
+        /*impuestoTotal: $("#txtIGV").val(),*/
         total: $("#txtTotal").val(),
         DetalleVenta: vmDetalleVenta
     }

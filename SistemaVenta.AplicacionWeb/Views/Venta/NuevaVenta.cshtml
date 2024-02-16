@@ -1,4 +1,4 @@
-﻿
+﻿<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 @{
     ViewData["Title"] = "NuevaVenta";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -9,6 +9,12 @@
         =ESTILOS PARA ESTA PAGINA
         ===============================================================-->
     <link href="~/vendor/select2/select2.min.css" rel="stylesheet">
+
+    <style>
+        .select2 {
+            width: 100% !important;
+        }
+    </style>
 }
 
 <div class="row">
@@ -52,12 +58,13 @@
                                     <thead>
                                         <tr>
                                             <th></th>
-                                            <th>Inventario</th>
+                                            <th>Inventario</th>                             
+                                            <th>Articulo</th>
+                                            <th>Color</th>
+                                            <th>Talle</th>
                                             <th>Cantidad</th>
                                             <th>Precio</th>
                                             <th>Total</th>
-                                            <th>Color</th>
-                                            <th>Talle</th>
                                         </tr>
                                     </thead>
                                     <tbody>
