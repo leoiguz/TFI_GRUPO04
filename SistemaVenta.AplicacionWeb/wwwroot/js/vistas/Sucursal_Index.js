@@ -8,8 +8,6 @@
             return response.ok ? response.json() : Promise.reject(response);
         })
         .then(responseJson => {
-
-            
             if (responseJson.estado) {
                 const d = responseJson.objeto
 
@@ -19,7 +17,8 @@
                 $("#txtDomicilio").val(d.domicilio)
                 $("#txtCiudad").val(d.ciudad)
                 $("#txTelefono").val(d.telefono)
-                $("#txtImpuesto").val(d.porcentajeImpuesto)
+                $("#txtIva").val(d.iva)
+                $("#txtMargenGanancia").val(d.margenGanancia)
                 $("#txtSimboloMoneda").val(d.simboloMoneda)
        
             } else {
@@ -48,20 +47,18 @@ $("#btnGuardarCambios").click(function () {
         domicilio: $("#txtDomicilio").val(),
         ciudad: $("#txtCiudad").val(),
         telefono: $("#txTelefono").val(),
-        porcentajeImpuesto: $("#txtImpuesto").val(),
+        iva: $("#txtIva").val(),
+        margenGanancia: $("#txtMargenGanancia").val(),
         simboloMoneda: $("#txtSimboloMoneda").val()
 
     }
     
 
-    const formData = new FormData()
-
-    formData.append("modelo", JSON.stringify(modelo))
-
     $(".card-body").LoadingOverlay("show");
     fetch("Sucursal/GuardarCambios", {
         method: "POST",
-        body: formData
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+        body: JSON.stringify(modelo)
     })
         .then(response => {
             $(".card-body").LoadingOverlay("hide");
@@ -71,6 +68,7 @@ $("#btnGuardarCambios").click(function () {
 
             if (responseJson.estado) {
                 const d = responseJson.objeto
+                swal("Listo!", "Se guardaron los datos!", "success")
                              
             } else {
                 swal("Lo sentimos!", responseJson.mensaje, "error")

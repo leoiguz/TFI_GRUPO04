@@ -38,14 +38,22 @@ namespace SistemaVenta.AplicacionWeb.Utilidades.Automapper
             #region Sucursal
             CreateMap<Sucursal, VMSucursal>()
                 .ForMember(destino =>
-                destino.PorcentajeImpuesto,
-                opt => opt.MapFrom(origen => Convert.ToString(origen.PorcentajeImpuesto.Value, new CultureInfo("es-AR")))
+                destino.Iva,
+                opt => opt.MapFrom(origen => Convert.ToString(origen.Iva.Value, new CultureInfo("es-AR")))
+                )
+                .ForMember(destino =>
+                destino.MargenGanancia,
+                opt => opt.MapFrom(origen => Convert.ToString(origen.MargenGanancia.Value, new CultureInfo("es-AR")))
                 );
 
             CreateMap<VMSucursal, Sucursal>()
                 .ForMember(destino =>
-                destino.PorcentajeImpuesto,
-                opt => opt.MapFrom(origen => Convert.ToDecimal(origen.PorcentajeImpuesto.Value, new CultureInfo("es-AR")))
+                destino.Iva,
+                opt => opt.MapFrom(origen => Convert.ToDecimal(origen.Iva, new CultureInfo("es-AR")))
+                )
+                .ForMember(destino =>
+                destino.MargenGanancia,
+                opt => opt.MapFrom(origen => Convert.ToDecimal(origen.MargenGanancia, new CultureInfo("es-AR")))
                 );
             #endregion Sucursal
 

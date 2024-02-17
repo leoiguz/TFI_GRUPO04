@@ -17,8 +17,6 @@ namespace SistemaVenta.Entity
         public int? IdMarca { get; set; }
         public int? IdTipoTalle { get; set; }
         public decimal? Costo { get; set; }
-        public decimal? MargenGanancia { get; set; }
-        public decimal? Iva { get; set; }
         public bool? EsActivo { get; set; }
         public DateTime? FechaRegistro { get; set; }
 

@@ -9,7 +9,8 @@
         public string? Domicilio { get; set; }
         public string? Ciudad { get; set; }
         public string? Telefono { get; set; }
-        public decimal? PorcentajeImpuesto { get; set; }
+        public decimal? Iva { get; set; }
+        public decimal? MargenGanancia { get; set; }
         public string? SimboloMoneda { get; set; }
     }
 }

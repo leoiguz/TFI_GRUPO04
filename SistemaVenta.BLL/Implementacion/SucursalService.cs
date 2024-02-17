@@ -44,12 +44,9 @@ namespace SistemaVenta.BLL.Implementacion
                 sucursal_encontrado.Domicilio = entidad.Domicilio;
                 sucursal_encontrado.Ciudad = entidad.Ciudad;
                 sucursal_encontrado.Telefono = entidad.Telefono;
-                sucursal_encontrado.PorcentajeImpuesto = entidad.PorcentajeImpuesto;
+                sucursal_encontrado.Iva = entidad.Iva;
+                sucursal_encontrado.MargenGanancia = entidad.MargenGanancia;
                 sucursal_encontrado.SimboloMoneda = entidad.SimboloMoneda;
-
-    
-
-
 
                 await _repositorio.Editar(sucursal_encontrado);
                 return sucursal_encontrado;

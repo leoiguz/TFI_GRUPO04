@@ -83,13 +83,13 @@ namespace SistemaVenta.DAL.DBContext
 
                 entity.Property(e => e.IdTipoTalle).HasColumnName("idTipoTalle");
 
-                entity.Property(e => e.Iva)
-                    .HasColumnType("decimal(5, 2)")
-                    .HasColumnName("iva");
+                //entity.Property(e => e.Iva)
+                //    .HasColumnType("decimal(5, 2)")
+                //    .HasColumnName("iva");
 
-                entity.Property(e => e.MargenGanancia)
-                    .HasColumnType("decimal(5, 2)")
-                    .HasColumnName("margenGanancia");
+                //entity.Property(e => e.MargenGanancia)
+                //    .HasColumnType("decimal(5, 2)")
+                //    .HasColumnName("margenGanancia");
 
                 entity.HasOne(d => d.IdCategoriaNavigation)
                     .WithMany(p => p.Articulos)
@@ -646,9 +646,17 @@ namespace SistemaVenta.DAL.DBContext
                     .IsUnicode(false)
                     .HasColumnName("numeroDocumento");
 
-                entity.Property(e => e.PorcentajeImpuesto)
-                    .HasColumnType("decimal(10, 2)")
-                    .HasColumnName("porcentajeImpuesto");
+                entity.Property(e => e.Iva)
+                    .HasColumnType("decimal(10,2)")
+                    .HasColumnName("iva");
+
+                entity.Property(e => e.MargenGanancia)
+                    .HasColumnType("decimal(10,2)")
+                    .HasColumnName("margenGanancia");
+
+                //entity.Property(e => e.PorcentajeImpuesto)
+                //    .HasColumnType("decimal(10, 2)")
+                //    .HasColumnName("porcentajeImpuesto");
 
                 entity.Property(e => e.SimboloMoneda)
                     .HasMaxLength(5)
