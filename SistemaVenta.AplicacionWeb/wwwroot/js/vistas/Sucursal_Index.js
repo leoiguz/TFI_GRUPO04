@@ -29,7 +29,6 @@
 
 $("#btnGuardarCambios").click(function () {
 
-    ;
     const inputs = $("input.input-validar").serializeArray();
     const inputs_sin_valor = inputs.filter((item) => item.value.trim() == "") //devuelve todos los inputs q no tenga valor
 
@@ -50,15 +49,15 @@ $("#btnGuardarCambios").click(function () {
         iva: $("#txtIva").val(),
         margenGanancia: $("#txtMargenGanancia").val(),
         simboloMoneda: $("#txtSimboloMoneda").val()
-
     }
     
+    const formData = new FormData()
+    formData.append("modelo", JSON.stringify(modelo))
 
     $(".card-body").LoadingOverlay("show");
     fetch("Sucursal/GuardarCambios", {
         method: "POST",
-        headers: { "Content-Type": "application/json; charset=utf-8" },
-        body: JSON.stringify(modelo)
+        body: formData
     })
         .then(response => {
             $(".card-body").LoadingOverlay("hide");
@@ -68,7 +67,6 @@ $("#btnGuardarCambios").click(function () {
 
             if (responseJson.estado) {
                 const d = responseJson.objeto
-                swal("Listo!", "Se guardaron los datos!", "success")
                              
             } else {
                 swal("Lo sentimos!", responseJson.mensaje, "error")

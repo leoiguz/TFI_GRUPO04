@@ -647,11 +647,11 @@ namespace SistemaVenta.DAL.DBContext
                     .HasColumnName("numeroDocumento");
 
                 entity.Property(e => e.Iva)
-                    .HasColumnType("decimal(10,2)")
+                    .HasColumnType("decimal(10, 2)")
                     .HasColumnName("iva");
 
                 entity.Property(e => e.MargenGanancia)
-                    .HasColumnType("decimal(10,2)")
+                    .HasColumnType("decimal(10, 2)")
                     .HasColumnName("margenGanancia");
 
                 //entity.Property(e => e.PorcentajeImpuesto)

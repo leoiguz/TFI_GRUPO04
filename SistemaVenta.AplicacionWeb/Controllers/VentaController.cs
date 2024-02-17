@@ -56,6 +56,7 @@ namespace SistemaVenta.AplicacionWeb.Controllers
             try
             {
                 modelo.IdUsuario = 1;
+                modelo.IdPuntoVenta = 1;
                 Venta venta_creada = await _ventaServicio.Registrar(_mapper.Map<Venta>(modelo));
                 modelo = _mapper.Map<VMVenta>(venta_creada);
 
@@ -76,6 +77,15 @@ namespace SistemaVenta.AplicacionWeb.Controllers
             List<VMVenta> vmHistorialVenta = _mapper.Map<List<VMVenta>>(await _ventaServicio.Historial(numeroVenta, fechaInicio, fechaFin));
 
             return StatusCode(StatusCodes.Status200OK, vmHistorialVenta);
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> ObtenerClientes(string busqueda)
+        {
+            List<VMCliente> vmListaClientes = _mapper.Map<List<VMCliente>>(await _ventaServicio.ObtenerCliente(busqueda));
+
+            return StatusCode(StatusCodes.Status200OK, vmListaClientes);
         }
     }
 }

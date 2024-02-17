@@ -1,4 +1,128 @@
-﻿let ValorImpuesto = 0;
+﻿/*-------------------------------------------------------------BUSCAR CLIENTE-----------------------------------------------------------*/
+
+$(document).ready(function () {
+    $("#cboBuscarCliente").select2({
+        ajax: {
+            url: "/Venta/ObtenerClientes",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            delay: 250,
+            data: function (params) {
+                return {
+                    busqueda: params.term
+                };
+            },
+            processResults: function (data,) {
+
+                return {
+                    results: data.map((item) => (
+                        {
+                            id: item.idCliente,
+
+                            documentoCliente: item.numeroDocumento,
+                            nombreCliente: item.nombres,
+                            apellidoCliente: item.apellidos,
+                            condicionTributaria: item.nombreCondicionTributaria
+                        }
+                    ))
+                };
+            }
+        },
+        language: "es",
+        placeholder: 'Buscar Cliente...',
+        minimumInputLength: 1,
+        templateResult: formatoResultadosClientes
+    });
+
+})
+
+function formatoResultadosClientes(data) {
+    if (data.loading)
+        return data.text;
+
+    var contenedorCliente = $(
+        `<table width="100%">
+            <tr>
+                <td>
+                    <p style="font-weight: bolder;margin:2px">${data.nombreCliente}</p>
+                    <p style="margin:2px">${data.nombreCliente}</p>
+                    <p style="margin:2px">${data.apellidoCliente}</p>
+                </td>
+            </tr>
+         </table>`
+    );
+
+    return contenedorCliente;
+}
+
+
+let ClienteParaVenta = [];
+$("#cboBuscarCliente").on("select2:select", function (e) {
+    const data = e.params.data;
+
+    let cliente_encontrado = ClienteParaVenta.filter(c => c.idCliente == data.id)
+    if (cliente_encontrado.length > 0) {
+        $("#cboBuscarCliente").val("").trigger("change")
+        toastr.warning("", "El Cliente ya fue agregado")
+        return false
+    }
+
+    else {
+
+        let cliente = {
+            idCliente: data.id,
+
+            numeroDocumentoCliente: data.documentoCliente,
+            nombresCliente: data.nombreCliente,
+            apellidosCliente: data.apellidoCliente,
+            nombreCondicionTributariaCliente: data.condicionTributaria,
+        }
+
+        ClienteParaVenta.push(cliente)
+
+        mostrarCliente();
+        $("#cboBuscarCliente").val("").trigger("change")
+        swal.close()
+    }
+
+})
+
+function mostrarCliente() {
+
+    $("#tbCliente tbody").html("")
+
+    ClienteParaVenta.forEach((item) => {
+
+        $("#tbCliente tbody").append(
+            $("<tr>").append(
+                $("<td>").append(
+                    $("<button>").addClass("btn btn-danger btn-eliminar btn-sm").append(
+                        $("<i>").addClass("fas fa-trash-alt")
+                    ).data("idCliente", item.idCliente)
+                ),
+                $("<td>").text(item.numeroDocumentoCliente),
+                $("<td>").text(item.nombresCliente),
+                $("<td>").text(item.apellidosCliente),
+                $("<td>").text(item.nombreCondicionTributariaCliente),
+            )
+        )
+    })
+}
+
+$(document).on("click", "button.btn-eliminar", function () {
+
+    const _idcliente = $(this).data("idCliente")
+
+    ClienteParaVenta = ClienteParaVenta.filter(c => c.idCliente != _idcliente);
+
+    mostrarCliente();
+})
+
+
+/*-------------------------------------------------------------BUSCAR INVENTARIO--------------------------------------------------------*/
+let ValorIVA = 0;
+let ValorMG = 0;
+
 
 $(document).ready(function () {
 
@@ -18,6 +142,7 @@ $(document).ready(function () {
         })
 
 
+
     fetch("/Sucursal/Obtener")
         .then(response => {
             return response.ok ? response.json() : Promise.reject(response);
@@ -31,10 +156,12 @@ $(document).ready(function () {
                 console.log(d)
 
                 $("#inputGroupSubTotal").text(`Sub total - ${d.simboloMoneda}`)
-                $("#inputGroupIGV").text(`IGV(${d.porcentajeImpuesto}%) - ${d.simboloMoneda}`)
+                $("#inputGroupIva").text(`IVA(${d.iva}%) - ${d.simboloMoneda}`)
+                $("#inputGroupMG").text(`MG(${d.margenGanancia}%) - ${d.simboloMoneda}`)
                 $("#inputGroupTotal").text(`Total - ${d.simboloMoneda}`)
 
-                ValorImpuesto = parseFloat(d.porcentajeImpuesto)
+                ValorIVA = d.iva
+                ValorMG = d.margenGanancia
             }
 
         })
@@ -60,7 +187,7 @@ $(document).ready(function () {
                             articulo: item.nombreArticulo,
                             color: item.nombreColor,
                             talle: item.nombreTalle,
-                            precio: parseFloat(item.precioInventario)
+                            precio: item.precioArticulo
                         }
                     ))
                 };
@@ -129,7 +256,7 @@ $("#cboBuscarInventario").on("select2:select", function (e) {
             }
 
             let inventario = {
-                idInventario: data.id,  
+                idInventario: data.id,
                 articuloInventario: data.articulo,
                 colorInventario: data.color,
                 talleInventario: data.talle,
@@ -150,16 +277,17 @@ $("#cboBuscarInventario").on("select2:select", function (e) {
 
 function mostrarInventario_Precios() {
 
-    let total = 0;
-    let igv = 0;
+    let totalIVA = 0;
+    let IVA = 0;
+    let MG = 0;
     let subtotal = 0;
-    let porcentaje = ValorImpuesto / 100;
+    let totalFinal = 0;
 
     $("#tbInventario tbody").html("")
 
     InventariosParaVenta.forEach((item) => {
 
-        total = total + parseFloat(item.total)
+        subtotal = subtotal + parseFloat(item.total)
 
         $("#tbInventario tbody").append(
             $("<tr>").append(
@@ -172,18 +300,22 @@ function mostrarInventario_Precios() {
                 $("<td>").text(item.articuloInventario),
                 $("<td>").text(item.colorInventario),
                 $("<td>").text(item.talleInventario),
+                $("<td>").text(item.cantidad),
                 $("<td>").text(item.precio),
                 $("<td>").text(item.total)
             )
         )
     })
 
-    subtotal = total / (1 + porcentaje);
-    igv = total - subtotal;
+    totalIVA = subtotal * (1 + (ValorIVA)/100);
+    IVA = totalIVA - subtotal;
+    totalFinal = totalIVA + (totalIVA * (ValorMG) / 100)
+    MG = subtotal * (1 + (ValorMG) / 100) - subtotal
 
-    $("#txtSubTotal").val(subtotal.toFixed(2))
-    $("#txtIGV").val(igv.toFixed(2))
-    $("#txtTotal").val(total.toFixed(2))
+    $("#txtSubTotal").val(subtotal)
+    $("#txtIVA").val(IVA)
+    $("#txtMG").val(MG)
+    $("#txtTotal").val(totalFinal)
 
 
 }
@@ -197,7 +329,7 @@ $(document).on("click", "button.btn-eliminar", function () {
     mostrarInventario_Precios();
 })
 
-
+/*-------------------------------------------------------------TERMINAR VENTA--------------------------------------------------------*/
 $("#btnTerminarVenta").click(function () {
 
     if (InventariosParaVenta.length < 1) {
@@ -205,17 +337,25 @@ $("#btnTerminarVenta").click(function () {
         return;
     }
 
+    if (ClienteParaVenta.length < 1) {
+        toastr.warning("", "Debe ingresar un cliente")
+        return;
+    }
+
     const vmDetalleVenta = InventariosParaVenta;
 
+    const ultimoCliente = ClienteParaVenta[ClienteParaVenta.length - 1];
+
+    // Construir el objeto de venta con el nombre del cliente
     const venta = {
         idTipoComprobante: $("#cboTipoComprobante").val(),
-        //documentoCliente: $("#txtDocumentoCliente").val(),
-        //nombreCliente: $("#txtNombreCliente").val(),
+        documentoCliente: ultimoCliente.documentoCliente,
+        nombreCliente: ultimoCliente.nombresCliente, // Usar el nombre del último cliente agregado
         subTotal: $("#txtSubTotal").val(),
-        /*impuestoTotal: $("#txtIGV").val(),*/
+        impuestoTotal: $("#txtIva").val(),
         total: $("#txtTotal").val(),
-        DetalleVenta: vmDetalleVenta
-    }
+        DetalleVenta: InventariosParaVenta
+    };
 
     $("#btnTerminarVenta").LoadingOverlay("show");
 
@@ -233,9 +373,11 @@ $("#btnTerminarVenta").click(function () {
             if (responseJson.estado) {
                 InventariosParaVenta = [];
                 mostrarInventario_Precios();
+                ClienteParaVenta = [];
+                mostrarCliente();
 
-                $("#txtDocumentoCliente").val("")
-                $("#txtNombreCliente").val("")
+                //$("#txtDocumentoCliente").val("")
+                //$("#txtNombreCliente").val("")
                 $("#cboTipoComprobante").val($("#cboTipoComprobante option:first").val())
 
                 swal("Registrado!", `Numero Venta : ${responseJson.objeto.numeroVenta}`, "success")
