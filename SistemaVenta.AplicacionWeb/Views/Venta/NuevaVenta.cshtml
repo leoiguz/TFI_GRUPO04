@@ -1,13 +1,14 @@
 ﻿<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 @{
     ViewData["Title"] = "NuevaVenta";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 @section Estilos{
-    <!-- ============================================================
-        =ESTILOS PARA ESTA PAGINA
-        ===============================================================-->
+
     <link href="~/vendor/select2/select2.min.css" rel="stylesheet">
 
     <style>
@@ -22,7 +23,6 @@
         }
     </style>
 }
-
 <div class="row">
     <div class="col-sm-8">
         <div class="row">
@@ -44,7 +44,6 @@
                                 <table class="table table-striped table-sm" id="tbCliente">
                                     <thead>
                                         <tr>
-                                            <th></th>
                                             <th>Documento Cliente</th>
                                             <th>Nombre</th>
                                             <th>Apellido</th>
@@ -58,14 +57,9 @@
                         </div>
                     </div>
                 </div>
-            </div>
+          </div>
    </div>
-</div>
-</div>
 
-
-<div class="row">
-    <div class="col-sm-8">
         <div class="row">
             <div class="col-sm-12">
                 <div class="card shadow mb-4">
@@ -86,7 +80,7 @@
                                     <thead>
                                         <tr>
                                             <th></th>
-                                            <th>Inventario</th>                             
+                                            <th>Inventario</th>
                                             <th>Articulo</th>
                                             <th>Color</th>
                                             <th>Talle</th>
@@ -104,11 +98,7 @@
                 </div>
             </div>
         </div>
-
-    </div>
 </div>
-
-<div class="row">
 
     <div class="col-sm-4">
 
@@ -121,12 +111,9 @@
                     <div class="card-body">
                         <div class="input-group input-group-sm mb-3">
                             <div class="input-group-prepend">
-                                <label class="input-group-text" for="cboTipoComprobante">Tipo</label>
+                                <span class="input-group-text" id="inputGroupTipoComprobante">Tipo</span>
                             </div>
-                            <select class="custom-select" id="cboTipoComprobante">
-                                <option value="1">A</option>
-                                <option value="2">B</option>
-                            </select>
+                            <input type="text" class="form-control text-right" aria-label="Small" aria-describedby="inputGroupTipoComprobante" id="txtTipoComprobante" disabled>
                         </div>
                         <div class="input-group input-group-sm mb-3">
                             <div class="input-group-prepend">
@@ -157,7 +144,6 @@
             </div>
         </div>
 
-
         <div class="row">
             <div class="col-sm-12">
                 <div class="card shadow">
@@ -170,17 +156,14 @@
             </div>
         </div>
     </div>
-
 </div>
 
+     
+
 @section Scripts{
-    <!-- ============================================================
-        =SCRIPTS PARA ESTA PAGINA
-        ===============================================================-->
     <script src="~/vendor/select2/select2.min.js"></script>
     <script src="~/vendor/select2/es.min.js"></script>
 
     <script src="~/js/vistas/Nueva_Venta.js"></script>
-    @*<script src="~/js/vistas/Nueva_Venta_Cliente.js"></script>*@
 }
 

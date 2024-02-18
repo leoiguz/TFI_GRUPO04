@@ -87,5 +87,13 @@ namespace SistemaVenta.AplicacionWeb.Controllers
 
             return StatusCode(StatusCodes.Status200OK, vmListaClientes);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> ObtenerTipoComprobante(string busqueda)
+        {
+            VMTipoComprobante vmTipoComprobante = _mapper.Map<VMTipoComprobante>(await _ventaServicio.TipoComprobantePorCondicionTributaria(busqueda));
+
+            return StatusCode(StatusCodes.Status200OK, vmTipoComprobante);
+        }
     }
 }

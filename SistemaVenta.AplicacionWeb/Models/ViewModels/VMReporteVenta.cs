@@ -10,8 +10,8 @@
         public string? SubTotalVenta { get; set; }
         public string? ImpuestoTotalVenta { get; set; }
         public string? TotalVenta { get; set; }
-        public string? Articulo { get; set; }
-        public int Cantidad { get; set; }
+        public string? NombreArticulo { get; set; }
+        public string? Cantidad { get; set; }
         public string? Precio { get; set; }
         public string? Total { get; set; }
     }

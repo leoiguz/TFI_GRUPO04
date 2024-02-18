@@ -72,6 +72,8 @@ namespace SistemaVenta.DAL.Implementacion
                 .ThenInclude(u => u.IdUsuarioNavigation)
                 .Include(v => v.IdVentaNavigation)
                 .ThenInclude(tdv => tdv.IdTipoComprobanteNavigation)
+                .Include(v => v.IdVentaNavigation)
+                .ThenInclude(c => c.IdClienteNavigation)
                 .Where(dv => dv.IdVentaNavigation.FechaRegistro.Value.Date >= FechaInicio.Date &&
                   dv.IdVentaNavigation.FechaRegistro.Value.Date <= FechaFin.Date
                 ).ToListAsync();

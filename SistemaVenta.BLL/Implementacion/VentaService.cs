@@ -18,15 +18,21 @@ namespace SistemaVenta.BLL.Implementacion
         private readonly IGenericRepository<Inventario> _repositorioInventario;
         private readonly IVentaRepository _repositorioVenta;
         private readonly IGenericRepository<Cliente> _repositorioCliente;
+        private readonly IGenericRepository<TipoComprobante> _repositorioTipoComprobante;
+        IGenericRepository<CondicionTributaria> _repositorioCondicionTributaria;
 
         public VentaService(IGenericRepository<Inventario> repositorioInventario,
            IVentaRepository repositorioVenta,
-           IGenericRepository<Cliente> repositorioCliente
+           IGenericRepository<Cliente> repositorioCliente,
+           IGenericRepository<TipoComprobante> repositorioTipoComprobante,
+            IGenericRepository<CondicionTributaria> repositorioCondicionTributaria
            )
         {
             _repositorioInventario = repositorioInventario;
             _repositorioVenta = repositorioVenta;
             _repositorioCliente = repositorioCliente;
+            _repositorioTipoComprobante = repositorioTipoComprobante;
+            _repositorioCondicionTributaria = repositorioCondicionTributaria;
         }
         public async Task<List<Inventario>> ObtenerInventario(string busqueda)
         {
@@ -68,6 +74,7 @@ namespace SistemaVenta.BLL.Implementacion
                 v.FechaRegistro.Value.Date <= fech_fin.Date //filtramos ventas dentro del rango fecha inicio-fechafin
                     )
                     .Include(tdv => tdv.IdTipoComprobanteNavigation)
+                    .Include(c => c.IdClienteNavigation)
                     .Include(u => u.IdUsuarioNavigation)
                     .Include(dv => dv.DetalleVenta)
                     .ToList();
@@ -78,6 +85,7 @@ namespace SistemaVenta.BLL.Implementacion
                 v.NumeroVenta == numeroVenta
                     )
                     .Include(tdv => tdv.IdTipoComprobanteNavigation)
+                    .Include(c => c.IdClienteNavigation)
                     .Include(u => u.IdUsuarioNavigation)
                     .Include(dv => dv.DetalleVenta)
                     .ToList();
@@ -90,6 +98,7 @@ namespace SistemaVenta.BLL.Implementacion
 
             return querry
                      .Include(tdv => tdv.IdTipoComprobanteNavigation)
+                     .Include(c => c.IdClienteNavigation)
                      .Include(u => u.IdUsuarioNavigation)
                      .Include(dv => dv.DetalleVenta)
                      .First(); //devovemos todos estos atributos de la primera venta que se encuentre
@@ -112,6 +121,27 @@ namespace SistemaVenta.BLL.Implementacion
                 );
 
             return querry.Include(c => c.IdCondicionTributariaNavigation).ToList();
+        }
+
+        public async Task<TipoComprobante> TipoComprobantePorCondicionTributaria(string busqueda)
+        {
+            CondicionTributaria condicionTributaria = await _repositorioCondicionTributaria.Obtener(c => c.Nombre == busqueda);
+
+            if (condicionTributaria != null)
+            {
+                // Si se encontró la condición tributaria, consultar el tipo de comprobante asociado
+                IQueryable<TipoComprobante> query = await _repositorioTipoComprobante.Consultar(
+                    c => c.IdTipoComprobante == condicionTributaria.IdTipoComprobante
+                );
+
+                // Devuelve el primer tipo de comprobante encontrado
+                return query.FirstOrDefault();
+            }
+            else
+            {
+                // Si no se encontró la condición tributaria, devuelve null o realiza algún manejo de errores apropiado
+                return null;
+            }
         }
     }
 }

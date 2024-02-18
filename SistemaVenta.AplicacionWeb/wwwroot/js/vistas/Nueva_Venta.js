@@ -68,6 +68,14 @@ $("#cboBuscarCliente").on("select2:select", function (e) {
     }
 
     else {
+        if (ClienteParaVenta.length > 0) {
+            // Si ya hay un cliente agregado, eliminarlo
+            ClienteParaVenta = [];
+            // Limpiar la tabla de clientes
+            $("#tbCliente tbody").html("");
+            // Mensaje de advertencia
+            toastr.warning("", "Se ha eliminado el cliente anterior");
+        }
 
         let cliente = {
             idCliente: data.id,
@@ -76,11 +84,13 @@ $("#cboBuscarCliente").on("select2:select", function (e) {
             nombresCliente: data.nombreCliente,
             apellidosCliente: data.apellidoCliente,
             nombreCondicionTributariaCliente: data.condicionTributaria,
+
         }
 
         ClienteParaVenta.push(cliente)
-
+        console.log(cliente);
         mostrarCliente();
+        mostrarTipoComprobante(data.condicionTributaria);
         $("#cboBuscarCliente").val("").trigger("change")
         swal.close()
     }
@@ -95,29 +105,38 @@ function mostrarCliente() {
 
         $("#tbCliente tbody").append(
             $("<tr>").append(
-                $("<td>").append(
-                    $("<button>").addClass("btn btn-danger btn-eliminar btn-sm").append(
-                        $("<i>").addClass("fas fa-trash-alt")
-                    ).data("idCliente", item.idCliente)
-                ),
                 $("<td>").text(item.numeroDocumentoCliente),
                 $("<td>").text(item.nombresCliente),
                 $("<td>").text(item.apellidosCliente),
                 $("<td>").text(item.nombreCondicionTributariaCliente),
             )
-        )
-    })
+        )  
+
+
+    }) 
+
 }
+let TipoComprobante;
+function mostrarTipoComprobante(condicionTributaria) {
 
-$(document).on("click", "button.btn-eliminar", function () {
+    fetch(`/Venta/ObtenerTipoComprobante?busqueda=${condicionTributaria}`)
+        .then(response => {
+            return response.ok ? response.json() : Promise.reject(response);
+        })
+        .then(responseJson => {
 
-    const _idcliente = $(this).data("idCliente")
+            if (responseJson) {
+                const d = responseJson;
+                $("#txtTipoComprobante").val(d.descripcion);
+                TipoComprobante = d.idTipoComprobante;
+                
+            }
+        })
+        .catch(error => {
 
-    ClienteParaVenta = ClienteParaVenta.filter(c => c.idCliente != _idcliente);
-
-    mostrarCliente();
-})
-
+            console.error('Error al obtener tipo de comprobante:', error);
+        });
+}
 
 /*-------------------------------------------------------------BUSCAR INVENTARIO--------------------------------------------------------*/
 let ValorIVA = 0;
@@ -125,23 +144,6 @@ let ValorMG = 0;
 
 
 $(document).ready(function () {
-
-
-    fetch("/Venta/ListaTipoComprobante")
-        .then(response => {
-            return response.ok ? response.json() : Promise.reject(response);
-        })
-        .then(responseJson => {
-            if (responseJson.length > 0) {
-                responseJson.forEach((item) => {
-                    $("#cboTipoComprobante").append(
-                        $("<option>").val(item.idTipoComprobante).text(item.descripcion)
-                    )
-                })
-            }
-        })
-
-
 
     fetch("/Sucursal/Obtener")
         .then(response => {
@@ -152,8 +154,6 @@ $(document).ready(function () {
             if (responseJson.estado) {
 
                 const d = responseJson.objeto;
-
-                console.log(d)
 
                 $("#inputGroupSubTotal").text(`Sub total - ${d.simboloMoneda}`)
                 $("#inputGroupIva").text(`IVA(${d.iva}%) - ${d.simboloMoneda}`)
@@ -257,13 +257,15 @@ $("#cboBuscarInventario").on("select2:select", function (e) {
 
             let inventario = {
                 idInventario: data.id,
-                articuloInventario: data.articulo,
+                nombreArticulo: data.articulo,
                 colorInventario: data.color,
                 talleInventario: data.talle,
                 cantidad: parseInt(valor),
                 precio: data.precio.toString(),
                 total: (parseFloat(valor) * data.precio).toString()
             }
+
+            console.log(inventario);
 
             InventariosParaVenta.push(inventario)
 
@@ -275,6 +277,7 @@ $("#cboBuscarInventario").on("select2:select", function (e) {
 
 })
 
+let impuestosTotales = 0;
 function mostrarInventario_Precios() {
 
     let totalIVA = 0;
@@ -297,7 +300,7 @@ function mostrarInventario_Precios() {
                     ).data("idInventario", item.idInventario)
                 ),
                 $("<td>").text(item.cantidad),               
-                $("<td>").text(item.articuloInventario),
+                $("<td>").text(item.nombreArticulo),
                 $("<td>").text(item.colorInventario),
                 $("<td>").text(item.talleInventario),
                 $("<td>").text(item.cantidad),
@@ -317,6 +320,7 @@ function mostrarInventario_Precios() {
     $("#txtMG").val(MG)
     $("#txtTotal").val(totalFinal)
 
+    impuestosTotales = IVA + MG;
 
 }
 
@@ -348,13 +352,12 @@ $("#btnTerminarVenta").click(function () {
 
     // Construir el objeto de venta con el nombre del cliente
     const venta = {
-        idTipoComprobante: $("#cboTipoComprobante").val(),
-        documentoCliente: ultimoCliente.documentoCliente,
-        nombreCliente: ultimoCliente.nombresCliente, // Usar el nombre del último cliente agregado
+        idTipoComprobante: TipoComprobante.toString(),
+        idCliente: ultimoCliente.idCliente.toString(),
         subTotal: $("#txtSubTotal").val(),
-        impuestoTotal: $("#txtIva").val(),
+        impuestoTotal: impuestosTotales.toString(),
         total: $("#txtTotal").val(),
-        DetalleVenta: InventariosParaVenta
+        detalleVenta: vmDetalleVenta
     };
 
     $("#btnTerminarVenta").LoadingOverlay("show");
@@ -376,9 +379,7 @@ $("#btnTerminarVenta").click(function () {
                 ClienteParaVenta = [];
                 mostrarCliente();
 
-                //$("#txtDocumentoCliente").val("")
-                //$("#txtNombreCliente").val("")
-                $("#cboTipoComprobante").val($("#cboTipoComprobante option:first").val())
+                $("#txtTipoComprobante").val($("#txtTipoComprobante option:first").val())
 
                 swal("Registrado!", `Numero Venta : ${responseJson.objeto.numeroVenta}`, "success")
             } else {

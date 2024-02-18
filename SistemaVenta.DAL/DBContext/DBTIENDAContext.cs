@@ -221,6 +221,13 @@ namespace SistemaVenta.DAL.DBContext
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("nombre");
+
+                entity.Property(e => e.IdTipoComprobante).HasColumnName("idTipoComprobante");
+
+                entity.HasOne(d => d.IdTipoComprobanteNavigation)
+                    .WithMany(p => p.CondicionTributaria)
+                    .HasForeignKey(d => d.IdTipoComprobante)
+                    .HasConstraintName("FK_CondicionTributaria_idTipoComprobante");
             });
 
             modelBuilder.Entity<Configuracion>(entity =>
@@ -254,26 +261,14 @@ namespace SistemaVenta.DAL.DBContext
 
                 entity.Property(e => e.Cantidad).HasColumnName("cantidad");
 
-                entity.Property(e => e.CategoriaArticulo)
-                    .HasMaxLength(100)
+                entity.Property(e => e.NombreArticulo)
+                    .HasMaxLength(50)
                     .IsUnicode(false)
-                    .HasColumnName("categoriaArticulo");
-
-                entity.Property(e => e.DescripcionArticulo)
-                    .HasMaxLength(100)
-                    .IsUnicode(false)
-                    .HasColumnName("descripcionArticulo");
+                    .HasColumnName("nombreArticulo");
 
                 entity.Property(e => e.IdInventario).HasColumnName("idInventario");
 
-                entity.Property(e => e.IdArticulo).HasColumnName("idArticulo");
-
                 entity.Property(e => e.IdVenta).HasColumnName("idVenta");
-
-                entity.Property(e => e.MarcaArticulo)
-                    .HasMaxLength(100)
-                    .IsUnicode(false)
-                    .HasColumnName("marcaArticulo");
 
                 entity.Property(e => e.Precio)
                     .HasColumnType("decimal(10, 2)")
@@ -719,12 +714,12 @@ namespace SistemaVenta.DAL.DBContext
                     .HasColumnName("fechaRegistro")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.IdCondicionTributaria).HasColumnName("idCondicionTributaria");
+                //entity.Property(e => e.IdCondicionTributaria).HasColumnName("idCondicionTributaria");
 
-                entity.HasOne(d => d.IdCondicionTributariaNavigation)
-                    .WithMany(p => p.TipoComprobantes)
-                    .HasForeignKey(d => d.IdCondicionTributaria)
-                    .HasConstraintName("FK__TipoCompr__idCon__66603565");
+                //entity.HasOne(d => d.IdCondicionTributariaNavigation)
+                //    .WithMany(p => p.TipoComprobantes)
+                //    .HasForeignKey(d => d.IdCondicionTributaria)
+                //    .HasConstraintName("FK__TipoCompr__idCon__66603565");
             });
 
             modelBuilder.Entity<TipoTalle>(entity =>
@@ -823,6 +818,10 @@ namespace SistemaVenta.DAL.DBContext
                     .HasMaxLength(6)
                     .IsUnicode(false)
                     .HasColumnName("numeroVenta");
+
+                entity.Property(e => e.SubTotal)
+                    .HasColumnType("decimal(10, 2)")
+                    .HasColumnName("subTotal");
 
                 entity.Property(e => e.Total).HasColumnType("decimal(10, 2)");
 

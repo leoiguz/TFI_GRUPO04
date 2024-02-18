@@ -1,17 +1,21 @@
-﻿
+﻿<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 @{
     ViewData["Title"] = "Reporte";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 @section Estilos{
+
     <!-- ============================================================
-        =ESTILOS PARA ESTA PAGINA
-        ===============================================================-->
-        <link rel="stylesheet" href="~/vendor/datatables/dataTables.bootstrap4.min.css">
-        <link rel="stylesheet" href="~/vendor/datatables/extensiones/css/responsive.dataTables.min.css">
-        <link rel="stylesheet" href="~/vendor/datatables/extensiones/css/buttons.dataTables.min.css">
-        <link rel="stylesheet" href="~/vendor/jquery-ui/jquery-ui.css" >
+    =ESTILOS PARA ESTA PAGINA
+    ===============================================================-->
+    <link rel="stylesheet" href="~/vendor/datatables/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/vendor/datatables/extensiones/css/responsive.dataTables.min.css">
+    <link rel="stylesheet" href="~/vendor/datatables/extensiones/css/buttons.dataTables.min.css">
+    <link rel="stylesheet" href="~/vendor/jquery-ui/jquery-ui.css">
 }
 
 <div class="card shadow mb-4">
@@ -42,13 +46,12 @@
                         <tr>
                             <th scope="col">Fecha Registro</th>
                             <th scope="col">Numero Venta</th>
-                            <th scope="col">Tipo Comprobante</th>
+                            <th scope="col">Tipo Documento</th>
                             <th scope="col">Documento Cliente</th>
                             <th scope="col">Nombre Cliente</th>
-                            <th scope="col">Sub Total Venta</th>
                             <th scope="col">Impuesto Total Venta</th>
                             <th scope="col">Total Venta</th>
-                            <th scope="col">Articulo</th>
+                            <th scope="col">Producto</th>
                             <th scope="col">Cantidad</th>
                             <th scope="col">Precio</th>
                             <th scope="col">Total</th>
@@ -66,8 +69,8 @@
 @section Scripts{
 
     <!-- ============================================================
-        =SCRIPTS PARA ESTA PAGINA
-        ===============================================================-->
+    =SCRIPTS PARA ESTA PAGINA
+    ===============================================================-->
     <script src="~/vendor/datatables/jquery.dataTables.min.js"></script>
     <script src="~/vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
@@ -81,6 +84,5 @@
     <script src="~/vendor/jquery-ui/jquery-ui.js"></script>
     <script src="~/vendor/jquery-ui/idioma/datepicker-es.js"></script>
 
-    <!-- SOLO ES DE EJEMPLO - IGNORAR -->
-    <script src="~/js/vistas/datatables-demo.js"></script>
+    <script src="~/js/vistas/Reporte_Index.js"></script>
 }

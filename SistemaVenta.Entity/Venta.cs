@@ -16,6 +16,7 @@ namespace SistemaVenta.Entity
         public int? IdUsuario { get; set; }
         public int? IdCliente { get; set; }
         public int? IdPago { get; set; }
+        public decimal? SubTotal { get; set; }
         public decimal? ImpuestoTotal { get; set; }
         public decimal? Total { get; set; }
         public DateTime? FechaRegistro { get; set; }

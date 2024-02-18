@@ -7,11 +7,8 @@ namespace SistemaVenta.Entity
     {
         public int IdDetalleVenta { get; set; }
         public int? IdVenta { get; set; }
-        public int? IdArticulo { get; set; }
-        public string? MarcaArticulo { get; set; }
-        public string? DescripcionArticulo { get; set; }
-        public string? CategoriaArticulo { get; set; }
         public int? IdInventario { get; set; }
+        public string? NombreArticulo { get; set; }
         public int? Cantidad { get; set; }
         public decimal? Precio { get; set; }
         public decimal? Subtotal { get; set; }
