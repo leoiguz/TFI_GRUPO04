@@ -281,6 +281,7 @@ let impuestosTotales = 0;
 function mostrarInventario_Precios() {
 
     let totalIVA = 0;
+    let totalMG = 0;
     let IVA = 0;
     let MG = 0;
     let subtotal = 0;
@@ -310,15 +311,16 @@ function mostrarInventario_Precios() {
         )
     })
 
-    totalIVA = subtotal * (1 + (ValorIVA)/100);
+    totalIVA = subtotal * (1 + (ValorIVA) / 100);
+    totalMG = subtotal * (1 + (ValorMG) / 100);
     IVA = totalIVA - subtotal;
-    totalFinal = totalIVA + (totalIVA * (ValorMG) / 100)
-    MG = subtotal * (1 + (ValorMG) / 100) - subtotal
+    MG = totalMG - subtotal;
+    totalFinal = subtotal + IVA + MG;
 
-    $("#txtSubTotal").val(subtotal)
-    $("#txtIVA").val(IVA)
-    $("#txtMG").val(MG)
-    $("#txtTotal").val(totalFinal)
+    $("#txtSubTotal").val(parseFloat(subtotal).toFixed(2))
+    $("#txtIVA").val(parseFloat(IVA).toFixed(2))
+    $("#txtMG").val(parseFloat(MG).toFixed(2))
+    $("#txtTotal").val(parseFloat(totalFinal).toFixed(2))
 
     impuestosTotales = IVA + MG;
 

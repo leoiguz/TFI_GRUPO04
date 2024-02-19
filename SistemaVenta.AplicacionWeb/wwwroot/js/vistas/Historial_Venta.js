@@ -110,9 +110,9 @@ $("#tbventa tbody").on("click", ".btn-info", function () {
     $("#txtTipoComprobante").val(d.tipoComprobante)
     $("#txtDocumentoCliente").val(d.documentoCliente)
     $("#txtNombreCliente").val(d.nombreCliente)
-    $("#txtSubTotal").val(d.subTotal)
-    $("#txtIGV").val(d.impuestoTotal)
-    $("#txtTotal").val(d.total)
+    $("#txtSubTotal").val(d.subTotal);
+    $("#txtIGV").val(d.impuestoTotal); 
+    $("#txtTotal").val(d.total);
 
 
     $("#tbProductos tbody").html("");
