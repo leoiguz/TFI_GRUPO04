@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "DashBoard";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -50,16 +49,16 @@
         </div>
     </div>
 
-    <!-- Total de Articulos -->
+    <!-- Total de Inventarios -->
     <div class="col-xl-3 col-md-6 mb-4">
         <div class="card border-left-info shadow h-100 py-2">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                            Total de Articulos
+                            Total de Inventarios
                         </div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalArticulos">50</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalInventarios">50</div>
                     </div>
                     <div class="col-auto">
                         <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
@@ -71,16 +70,16 @@
 
 
 
-    <!-- Total de Categorias -->
+    <!-- Total de Articulos -->
     <div class="col-xl-3 col-md-6 mb-4">
         <div class="card border-left-warning shadow h-100 py-2">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                            Total de Categorias
+                            Total de Articulos
                         </div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalCategorias">18</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalArticulos">18</div>
                     </div>
                     <div class="col-auto">
                         <i class="fas fa-tags fa-2x text-gray-300"></i>
@@ -111,29 +110,25 @@
         </div>
     </div>
 
-    <!-- Pie Chart - Articulos más vendidos-->
+    <!-- Pie Chart - Inventarios más vendidos-->
     <div class="col-xl-4 col-lg-5">
         <div class="card shadow mb-4">
             <!-- Card Header - Dropdown -->
             <div class="card-header py-3 bg-second-primary">
-                <h6 class="m-0 font-weight-bold text-white">Articulos más vendidos</h6>
+                <h6 class="m-0 font-weight-bold text-white">Inventarios más vendidos</h6>
             </div>
             <!-- Card Body -->
             <div class="card-body">
                 <div class="chart-pie" style="height: 350px !important ;">
-                    <canvas id="charProductos"></canvas>
+                    <canvas id="charInventarios"></canvas>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- ============================================================
-=SCRIPTS PARA ESTA PAGINA
-===============================================================-->
-<script src="~/vendor/chart.js/Chart.min.js"></script>
+@section Scripts {
+    <script src="~/vendor/chart.js/Chart.min.js"></script>
 
-<!-- SOLO ES DE EJEMPLO - IGNORAR -->
-<script src="~/js/vistas/chart-bar-demo.js"></script>
-<script src="~/js/vistas/chart-pie-demo.js"></script>
-
+    <script src="~/js/vistas/DashBoard_Index.js"></script>
+}

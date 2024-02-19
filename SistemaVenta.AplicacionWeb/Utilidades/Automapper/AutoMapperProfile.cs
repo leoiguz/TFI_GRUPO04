@@ -414,6 +414,15 @@ namespace SistemaVenta.AplicacionWeb.Utilidades.Automapper
             opt => opt.MapFrom(origen => origen.InverseIdMenuPadreNavigation)
             );
             #endregion Menu
+
+            #region InventariosSemana
+            CreateMap<Inventario, VMInventariosSemana>()
+                .ForMember(destino =>
+                destino.NombreArticulo,
+                opt => opt.MapFrom(origen => origen.IdArticuloNavigation.Descripcion));
+
+
+            #endregion
         }
     }
 }

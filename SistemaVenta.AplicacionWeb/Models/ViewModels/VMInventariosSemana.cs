@@ -1,8 +1,8 @@
 ﻿namespace SistemaVenta.AplicacionWeb.Models.ViewModels
 {
-    public class VMArticulosSemana
+    public class VMInventariosSemana
     {
-        public string? Articulo { get; set; }
+        public string? NombreArticulo { get; set; }
         public int Cantidad { get; set; }
     }
 }

@@ -48,6 +48,7 @@ namespace SistemaVenta.IOC
             services.AddScoped<ICondicionTributariaService, CondicionTributariaService>();
             services.AddScoped<ITipoComprobanteService, TipoComprobanteService>();
             services.AddScoped<IVentaService, VentaService>();
+            services.AddScoped<IDashBoardService, DashBoardService>();
 
 
         }
