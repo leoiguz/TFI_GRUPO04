@@ -823,7 +823,9 @@ namespace SistemaVenta.DAL.DBContext
                     .HasColumnType("decimal(10, 2)")
                     .HasColumnName("subTotal");
 
-                entity.Property(e => e.Total).HasColumnType("decimal(10, 2)");
+                entity.Property(e => e.Total)
+                .HasColumnType("decimal(10, 2)")
+                .HasColumnName("total");
 
                 entity.HasOne(d => d.IdClienteNavigation)
                     .WithMany(p => p.Venta)

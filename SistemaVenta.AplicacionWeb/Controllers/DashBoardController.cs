@@ -7,6 +7,7 @@ using SistemaVenta.BLL.Interfaces;
 
 namespace SistemaVenta.AplicacionWeb.Controllers
 {
+    [Authorize]
     public class DashBoardController : Controller
     {
 

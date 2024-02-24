@@ -45,10 +45,13 @@ namespace SistemaVenta.IOC
             services.AddScoped<ITalleService, TalleService>();
             services.AddScoped<IInventarioService, InventarioService>();
             services.AddScoped<IClienteService, ClienteService>();
+
             services.AddScoped<ICondicionTributariaService, CondicionTributariaService>();
             services.AddScoped<ITipoComprobanteService, TipoComprobanteService>();
             services.AddScoped<IVentaService, VentaService>();
+
             services.AddScoped<IDashBoardService, DashBoardService>();
+            services.AddScoped<IMenuService, MenuService>();
 
 
         }

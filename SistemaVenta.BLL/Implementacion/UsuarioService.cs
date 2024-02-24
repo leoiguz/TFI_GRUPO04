@@ -44,18 +44,12 @@ namespace SistemaVenta.BLL.Implementacion
             Usuario usuario_existe = await _repositorio.Obtener(u => u.Correo == entidad.Correo);
 
             if(usuario_existe != null)
-                throw new TaskCanceledException("El correo ya exite");
+                throw new TaskCanceledException("El correo ya existe");
 
             try
             {
                 string clave_generada = _utilidadesService.GenerarClave();
                 entidad.Clave = _utilidadesService.ConvertirSha256(clave_generada);
-                //  entidad.NombreFoto = NombreFoto; // No Tenemos Foto en nuestro usuario
-                //if(Foto != null)
-                //  {
-                //      string urlFoto = await _fireBaseService.SubirStorage(Foto, "carpeta_usuario", NombreFoto);
-                //      entidad.UrlFoto = urlFoto;
-                //  }         Esto si implementamos foto
                 Usuario usuario_creado = await _repositorio.Crear(entidad);
 
                 if (usuario_creado.IdUsuario == 0)
@@ -120,14 +114,6 @@ namespace SistemaVenta.BLL.Implementacion
                 usuario_editar.IdRol = entidad.IdRol;
                 usuario_editar.EsActivo = entidad.EsActivo;
 
-                //if (usuario_editar.NombreFoto == "")
-                //    usuario_editar.NombreFoto = NombreFoto;  Por si se usa foto
-                //if(Foto != null)
-                //{
-                //    string urlFoto = await _fireBaseService.SubirStorage(Foto, "carpeta_usuario", usuario_editar.NombreFoto);
-                //    usuario_editar.UrlFoto = urlFoto;
-                //}
-
                 bool respuesta = await _repositorio.Editar(usuario_editar);
 
                 if(!respuesta)
@@ -148,13 +134,10 @@ namespace SistemaVenta.BLL.Implementacion
             {
                 Usuario usuario_encontrado = await _repositorio.Obtener(u => u.IdUsuario == IdUsuario);
                 if (usuario_encontrado == null)
-                    throw new TaskCanceledException("El usuario no exite");
+                    throw new TaskCanceledException("El usuario no existe");
 
                 //string nombreFoto = usuario_encontrado.NombreFoto;
                 bool respuesta = await _repositorio.Eliminar(usuario_encontrado);
-
-                //if (respuesta)
-                //    await _fireBaseService.EliminarStorage("carpeta_usuario", nombreFoto);
 
                 return true;
             }
@@ -209,7 +192,7 @@ namespace SistemaVenta.BLL.Implementacion
                 Usuario usuario_encontrado = await _repositorio.Obtener(u => u.IdUsuario == IdUsuario);
 
                 if (usuario_encontrado == null)
-                    throw new TaskCanceledException("El usuario no exite");
+                    throw new TaskCanceledException("El usuario no existe");
 
                 if(usuario_encontrado.Clave != _utilidadesService.ConvertirSha256(ClaveActual))
                     throw new TaskCanceledException("La contraseña ingresada como actual no es correcta");
@@ -227,7 +210,7 @@ namespace SistemaVenta.BLL.Implementacion
         }
 
 
-        public async Task<bool> RestablecerClave(string Correo, string UrlPlantillaCorreo)
+        public async Task<bool> RestablecerClave(string Correo, string UrlPlantillaCorreo = "")
         {
             try
             {
@@ -239,7 +222,9 @@ namespace SistemaVenta.BLL.Implementacion
                 string clave_generada = _utilidadesService.GenerarClave();
                 usuario_encontrado.Clave = _utilidadesService.ConvertirSha256(clave_generada);
 
+
                 UrlPlantillaCorreo = UrlPlantillaCorreo.Replace("[clave]", clave_generada);
+
 
                 string htmlCorreo = "";
 
@@ -252,9 +237,10 @@ namespace SistemaVenta.BLL.Implementacion
                     {
                         StreamReader readerStream = null;
                         if (response.CharacterSet == null)
+                        {
                             readerStream = new StreamReader(dataStream);
-                        else
-                            readerStream = new StreamReader(dataStream, Encoding.GetEncoding(response.CharacterSet));
+                        }
+                        else readerStream = new StreamReader(dataStream, Encoding.GetEncoding(response.CharacterSet));
 
                         htmlCorreo = readerStream.ReadToEnd();
                         response.Close();
@@ -263,20 +249,21 @@ namespace SistemaVenta.BLL.Implementacion
                 }
 
                 bool correo_enviado = false;
-
                 if (htmlCorreo != "")
-                    await _correoService.EnviarCorreo(Correo, "Contraseña Restablecida", htmlCorreo);
+                    correo_enviado = await _correoService.EnviarCorreo(Correo, "Contraseña Restablecida", htmlCorreo);
 
                 if (!correo_enviado)
-                    throw new TaskCanceledException("Tenemos Problema. Por favor intente más tarde");
+                    throw new TaskCanceledException("Tenemos problemas. Por favor, intentalo de nuevo mas tarde");
 
                 bool respuesta = await _repositorio.Editar(usuario_encontrado);
 
                 return respuesta;
 
             }
-            catch (Exception ex) { throw; }
-
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
     }
 }
