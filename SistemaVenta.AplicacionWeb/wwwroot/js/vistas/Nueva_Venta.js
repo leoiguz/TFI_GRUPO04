@@ -141,6 +141,8 @@ function mostrarTipoComprobante(condicionTributaria) {
 /*-------------------------------------------------------------BUSCAR INVENTARIO--------------------------------------------------------*/
 let ValorIVA = 0;
 let ValorMG = 0;
+let impuestosTotales = 0;
+let totalFinal = 0;
 
 
 $(document).ready(function () {
@@ -240,7 +242,8 @@ $("#cboBuscarInventario").on("select2:select", function (e) {
         type: "input",
         showCancelButton: true,
         closeOnConfirm: false,
-        inputPlaceholder: "Ingrese Cantidad"
+        inputPlaceholder: "Ingrese Cantidad",
+        inputValue: "1"
     },
         function (valor) {
 
@@ -277,7 +280,6 @@ $("#cboBuscarInventario").on("select2:select", function (e) {
 
 })
 
-let impuestosTotales = 0;
 function mostrarInventario_Precios() {
 
     let totalIVA = 0;
@@ -285,7 +287,6 @@ function mostrarInventario_Precios() {
     let IVA = 0;
     let MG = 0;
     let subtotal = 0;
-    let totalFinal = 0;
 
     $("#tbInventario tbody").html("")
 
@@ -338,13 +339,12 @@ $(document).on("click", "button.btn-eliminar", function () {
 /*-------------------------------------------------------------TERMINAR VENTA--------------------------------------------------------*/
 $("#btnTerminarVenta").click(function () {
 
-    if (InventariosParaVenta.length < 1) {
-        toastr.warning("", "Debe ingresar inventarios")
-        return;
-    }
+    const montoIngresado = parseFloat($("#txtMonto").val());
+    const totalVenta = parseFloat($("#txtTotalVenta").text());
 
-    if (ClienteParaVenta.length < 1) {
-        toastr.warning("", "Debe ingresar un cliente")
+    if (isNaN(montoIngresado) || montoIngresado < totalVenta) {
+        toastr.warning("", "El monto ingresado debe ser igual o mayor al total de la venta");
+        $("#txtMonto").focus();
         return;
     }
 
@@ -371,6 +371,7 @@ $("#btnTerminarVenta").click(function () {
     })
         .then(response => {
             $("#btnTerminarVenta").LoadingOverlay("hide");
+            $("#modalPago").modal("hide")
             return response.ok ? response.json() : Promise.reject(response);
         })
         .then(responseJson => {
@@ -390,3 +391,70 @@ $("#btnTerminarVenta").click(function () {
         })
 
 })
+
+/*------------------------------------- PAGO ------------------------------------------*/
+
+const MODELO_BASE_PAGO = {
+    idPago: 0,
+    monto: 0,
+    idTipoPago: 0
+}
+
+$(document).ready(function () {
+
+    fetch("/TipoPago/Lista")
+        .then(response => {
+            return response.ok ? response.json() : Promise.reject(response);
+        })
+        .then(responseJson => {
+            if (responseJson.data.length > 0) {
+                responseJson.data.forEach((item) => {
+                    $("#cboTipoPago").append(
+                        $("<option>").val(item.idTipoPago).text(item.descripcion)
+                    )
+                })
+            }
+        })
+})
+
+function mostrarModalPago(modelo = MODELO_BASE_PAGO) {
+    $("#txtId").val(modelo.idPago)
+    $("#txtMonto").val(modelo.monto)
+    $("#cboTipoPago").val(modelo.idTipoPago == 0 ? $("#cboTipoPago option:first").val() : modelo.idTipoPago)
+    $("#txtTotalVenta").text(totalFinal);
+    $("#txtMonto").on("input", function () {
+        calcularCambio();
+    });
+    $("#modalPago").modal("show")
+}
+
+$("#btnPagoVenta").click(function () {
+    if (InventariosParaVenta.length < 1) {
+        toastr.warning("", "Debe ingresar inventarios")
+        return;
+    }
+
+    if (ClienteParaVenta.length < 1) {
+        toastr.warning("", "Debe ingresar un cliente")
+        return;
+    }
+    mostrarModalPago()
+})
+
+function calcularCambio() {
+    // Obtener el monto pagado
+    const montoPagado = parseFloat($("#txtMonto").val());
+    // Obtener el total de la venta
+    const totalVenta = parseFloat($("#txtTotalVenta").text());
+
+    // Calcular el cambio
+    const cambio = montoPagado - totalVenta;
+
+    if (cambio >= 0) {
+        // Mostrar el cambio en el campo correspondiente del modal de pago
+        $("#txtCambio").text(cambio.toFixed(2)); // Redondear a 2 decimales
+    } else {
+        // Si el cambio es negativo o cero, ocultar el campo de cambio
+        $("#txtCambio").text(""); // Limpiar el contenido del campo
+    }
+}

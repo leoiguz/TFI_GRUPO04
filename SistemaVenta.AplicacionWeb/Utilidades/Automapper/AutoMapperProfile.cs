@@ -275,6 +275,41 @@ namespace SistemaVenta.AplicacionWeb.Utilidades.Automapper
             CreateMap<TipoComprobante, VMTipoComprobante>().ReverseMap();
             #endregion TipoComprobante
 
+            #region TipoPago
+            CreateMap<TipoPago, VMTipoPago>().ReverseMap();
+            #endregion TipoPago
+
+            #region Pago
+            CreateMap<Pago, VMPago>()
+                .ForMember(destino =>
+                destino.esActivo,
+                opt => opt.MapFrom(origen => origen.EsActivo == true ? 1 : 0)
+                )
+                .ForMember(destino =>
+                destino.Monto,
+                opt => opt.MapFrom(origen => Convert.ToString(origen.Monto.Value, new CultureInfo("es-AR")))
+                )
+                .ForMember(destino =>
+                destino.NombreTipoPago,
+                opt => opt.MapFrom(origen => origen.IdTipoPagoNavigation.Descripcion)
+                );
+
+            CreateMap<VMPago, Pago>()
+                .ForMember(destino =>
+                destino.EsActivo,
+                opt => opt.MapFrom(origen => origen.esActivo == 1 ? true : false)
+                )
+                .ForMember(destino =>
+                destino.Monto,
+                opt => opt.MapFrom(origen => Convert.ToDecimal(origen.Monto, new CultureInfo("es-AR")))
+                )
+                .ForMember(destino =>
+                destino.IdTipoPagoNavigation,
+                opt => opt.Ignore()
+                );
+
+            #endregion Pago
+
             #region Venta
             CreateMap<Venta, VMVenta>()
             .ForMember(destino =>

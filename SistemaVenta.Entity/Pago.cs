@@ -13,8 +13,10 @@ namespace SistemaVenta.Entity
         public int IdPago { get; set; }
         public decimal? Monto { get; set; }
         public bool? EsActivo { get; set; }
+        public int? IdTipoPago { get; set; }
         public DateTime? FechaRegistro { get; set; }
-        public string? Observaciones { get; set; }
+
+        public virtual TipoPago? IdTipoPagoNavigation { get; set; }
 
         public virtual ICollection<Venta> Venta { get; set; }
     }

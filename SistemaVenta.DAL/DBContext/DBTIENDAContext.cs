@@ -38,6 +38,7 @@ namespace SistemaVenta.DAL.DBContext
         public virtual DbSet<Talle> Talles { get; set; } = null!;
         public virtual DbSet<TipoComprobante> TipoComprobantes { get; set; } = null!;
         public virtual DbSet<TipoTalle> TipoTalles { get; set; } = null!;
+        public virtual DbSet<TipoPago> TipoPagos { get; set; } = null!;
         public virtual DbSet<Usuario> Usuarios { get; set; } = null!;
         public virtual DbSet<Venta> Venta { get; set; } = null!;
 
@@ -82,14 +83,6 @@ namespace SistemaVenta.DAL.DBContext
                 entity.Property(e => e.IdMarca).HasColumnName("idMarca");
 
                 entity.Property(e => e.IdTipoTalle).HasColumnName("idTipoTalle");
-
-                //entity.Property(e => e.Iva)
-                //    .HasColumnType("decimal(5, 2)")
-                //    .HasColumnName("iva");
-
-                //entity.Property(e => e.MargenGanancia)
-                //    .HasColumnType("decimal(5, 2)")
-                //    .HasColumnName("margenGanancia");
 
                 entity.HasOne(d => d.IdCategoriaNavigation)
                     .WithMany(p => p.Articulos)
@@ -488,10 +481,13 @@ namespace SistemaVenta.DAL.DBContext
                     .HasColumnType("decimal(10, 2)")
                     .HasColumnName("monto");
 
-                entity.Property(e => e.Observaciones)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("observaciones");
+                entity.Property(e => e.IdTipoPago).HasColumnName("idTipoPago");
+
+                entity.HasOne(d => d.IdTipoPagoNavigation)
+                    .WithMany(p => p.Pagos)
+                    .HasForeignKey(d => d.IdTipoPago)
+                    .HasConstraintName("FK_Pago_idTipoPago");
+
             });
 
             modelBuilder.Entity<PuntoVenta>(entity =>
@@ -649,10 +645,6 @@ namespace SistemaVenta.DAL.DBContext
                     .HasColumnType("decimal(10, 2)")
                     .HasColumnName("margenGanancia");
 
-                //entity.Property(e => e.PorcentajeImpuesto)
-                //    .HasColumnType("decimal(10, 2)")
-                //    .HasColumnName("porcentajeImpuesto");
-
                 entity.Property(e => e.SimboloMoneda)
                     .HasMaxLength(5)
                     .IsUnicode(false)
@@ -714,12 +706,6 @@ namespace SistemaVenta.DAL.DBContext
                     .HasColumnName("fechaRegistro")
                     .HasDefaultValueSql("(getdate())");
 
-                //entity.Property(e => e.IdCondicionTributaria).HasColumnName("idCondicionTributaria");
-
-                //entity.HasOne(d => d.IdCondicionTributariaNavigation)
-                //    .WithMany(p => p.TipoComprobantes)
-                //    .HasForeignKey(d => d.IdCondicionTributaria)
-                //    .HasConstraintName("FK__TipoCompr__idCon__66603565");
             });
 
             modelBuilder.Entity<TipoTalle>(entity =>
@@ -786,6 +772,21 @@ namespace SistemaVenta.DAL.DBContext
                     .WithMany(p => p.Usuarios)
                     .HasForeignKey(d => d.IdRol)
                     .HasConstraintName("FK__Usuario__idRol__4316F928");
+            });
+
+            modelBuilder.Entity<TipoPago>(entity =>
+            {
+                entity.HasKey(e => e.IdTipoPago)
+                    .HasName("PK__TipoPago__AC5BA85BFA4D6DE2");
+
+                entity.ToTable("TipoPago");
+
+                entity.Property(e => e.IdTipoPago).HasColumnName("idTipoPago");
+
+                entity.Property(e => e.Descripcion)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("descripcion");
             });
 
             modelBuilder.Entity<Venta>(entity =>
