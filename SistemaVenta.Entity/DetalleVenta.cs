@@ -10,8 +10,9 @@ namespace SistemaVenta.Entity
         public int? IdInventario { get; set; }
         public string? NombreArticulo { get; set; }
         public int? Cantidad { get; set; }
-        public decimal? Precio { get; set; }
-        public decimal? Subtotal { get; set; }
+        public decimal? MontoIva { get; set; }
+        public decimal? PorcentajeIva { get; set; }
+        public decimal? NetoGravado { get; set; }
         public decimal? Total { get; set; }
 
         public virtual Inventario? IdInventarioNavigation { get; set; }

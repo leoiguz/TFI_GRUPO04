@@ -66,6 +66,14 @@ namespace SistemaVenta.DAL.DBContext
                     .HasColumnType("decimal(10, 2)")
                     .HasColumnName("costo");
 
+                entity.Property(e => e.Iva)
+                    .HasColumnType("decimal(10, 2)")
+                    .HasColumnName("iva");
+
+                entity.Property(e => e.MargenGanancia)
+                    .HasColumnType("decimal(10, 2)")
+                    .HasColumnName("margenGanancia");
+
                 entity.Property(e => e.Descripcion)
                     .HasMaxLength(100)
                     .IsUnicode(false)
@@ -151,8 +159,6 @@ namespace SistemaVenta.DAL.DBContext
                     .HasColumnName("fechaRegistro")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.IdCondicionTributaria).HasColumnName("idCondicionTributaria");
-
                 entity.Property(e => e.Nombres)
                     .HasMaxLength(50)
                     .IsUnicode(false)
@@ -167,6 +173,8 @@ namespace SistemaVenta.DAL.DBContext
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("telefono");
+
+                entity.Property(e => e.IdCondicionTributaria).HasColumnName("idCondicionTributaria");
 
                 entity.HasOne(d => d.IdCondicionTributariaNavigation)
                     .WithMany(p => p.Clientes)
@@ -214,6 +222,11 @@ namespace SistemaVenta.DAL.DBContext
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("nombre");
+
+                entity.Property(e => e.Codigo)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("codigo");
 
                 entity.Property(e => e.IdTipoComprobante).HasColumnName("idTipoComprobante");
 
@@ -263,13 +276,17 @@ namespace SistemaVenta.DAL.DBContext
 
                 entity.Property(e => e.IdVenta).HasColumnName("idVenta");
 
-                entity.Property(e => e.Precio)
+                entity.Property(e => e.NetoGravado)
                     .HasColumnType("decimal(10, 2)")
-                    .HasColumnName("precio");
+                    .HasColumnName("netoGravado");
 
-                entity.Property(e => e.Subtotal)
+                entity.Property(e => e.MontoIva)
                     .HasColumnType("decimal(10, 2)")
-                    .HasColumnName("subtotal");
+                    .HasColumnName("montoIva");
+
+                entity.Property(e => e.PorcentajeIva)
+                    .HasColumnType("decimal(10, 2)")
+                    .HasColumnName("porcentajeIva");
 
                 entity.Property(e => e.Total)
                     .HasColumnType("decimal(10, 2)")
@@ -635,25 +652,20 @@ namespace SistemaVenta.DAL.DBContext
                 entity.Property(e => e.NumeroDocumento)
                     .HasMaxLength(50)
                     .IsUnicode(false)
-                    .HasColumnName("numeroDocumento");
+                    .HasColumnName("numeroDocumento");            
 
-                entity.Property(e => e.Iva)
-                    .HasColumnType("decimal(10, 2)")
-                    .HasColumnName("iva");
-
-                entity.Property(e => e.MargenGanancia)
-                    .HasColumnType("decimal(10, 2)")
-                    .HasColumnName("margenGanancia");
-
-                entity.Property(e => e.SimboloMoneda)
-                    .HasMaxLength(5)
-                    .IsUnicode(false)
-                    .HasColumnName("simboloMoneda");
 
                 entity.Property(e => e.Telefono)
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("telefono");
+
+                entity.Property(e => e.IdCondicionTributaria).HasColumnName("idCondicionTributaria");
+
+                entity.HasOne(d => d.IdCondicionTributariaNavigation)
+                    .WithMany(p => p.Sucursales)
+                    .HasForeignKey(d => d.IdCondicionTributaria)
+                    .HasConstraintName("FK_Sucursal_CondicionTributaria");
             });
 
             modelBuilder.Entity<Talle>(entity =>
@@ -705,6 +717,11 @@ namespace SistemaVenta.DAL.DBContext
                     .HasColumnType("datetime")
                     .HasColumnName("fechaRegistro")
                     .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.Codigo)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("codigo");
 
             });
 
@@ -811,22 +828,22 @@ namespace SistemaVenta.DAL.DBContext
 
                 entity.Property(e => e.IdUsuario).HasColumnName("idUsuario");
 
-                entity.Property(e => e.ImpuestoTotal)
-                    .HasColumnType("decimal(10, 2)")
-                    .HasColumnName("impuestoTotal");
-
-                entity.Property(e => e.NumeroVenta)
+                entity.Property(e => e.NumeroComprobante)
                     .HasMaxLength(6)
                     .IsUnicode(false)
-                    .HasColumnName("numeroVenta");
+                    .HasColumnName("numeroComprobante");
 
-                entity.Property(e => e.SubTotal)
+                entity.Property(e => e.ImporteIva)
                     .HasColumnType("decimal(10, 2)")
-                    .HasColumnName("subTotal");
+                    .HasColumnName("importeIva");
 
-                entity.Property(e => e.Total)
+                entity.Property(e => e.NetoGravado)
+                    .HasColumnType("decimal(10, 2)")
+                    .HasColumnName("netoGravado");
+
+                entity.Property(e => e.Monto)
                 .HasColumnType("decimal(10, 2)")
-                .HasColumnName("total");
+                .HasColumnName("monto");
 
                 entity.HasOne(d => d.IdClienteNavigation)
                     .WithMany(p => p.Venta)
@@ -852,6 +869,16 @@ namespace SistemaVenta.DAL.DBContext
                     .WithMany(p => p.Venta)
                     .HasForeignKey(d => d.IdUsuario)
                     .HasConstraintName("FK__Venta__idUsuario__09A971A2");
+
+                entity.Property(e => e.Observacion)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("observacion");
+
+                entity.Property(e => e.Estado)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("estado");
             });
 
             OnModelCreatingPartial(modelBuilder);

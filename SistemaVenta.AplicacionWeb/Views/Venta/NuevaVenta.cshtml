@@ -17,6 +17,9 @@
         .body{
             text-align: center;
         }
+        .detalleVenta{
+            margin-top: 2.75rem;
+        }
     </style>
 }
 
@@ -102,7 +105,7 @@
         </div>
 </div>
 
-    <div class="col-sm-4">
+    <div class="col-sm-4 detalleVenta">
 
         <div class="row">
             <div class="col-sm-12">
@@ -119,27 +122,21 @@
                         </div>
                         <div class="input-group input-group-sm mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text" id="inputGroupSubTotal">Sub Total</span>
+                                <span class="input-group-text" id="inputGroupNetoGravado">Neto Gravado</span>
                             </div>
-                            <input type="text" class="form-control text-right" aria-label="Small" aria-describedby="inputGroupSubTotal" id="txtSubTotal" disabled>
+                            <input type="text" class="form-control text-right" aria-label="Small" aria-describedby="inputGroupNetoGravado" id="txtNetoGravado" disabled>
                         </div>
                         <div class="input-group input-group-sm mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text" id="inputGroupIva">Iva(%)</span>
+                                <span class="input-group-text" id="inputGroupIva">Impuesto Iva</span>
                             </div>
-                            <input type="text" class="form-control text-right" aria-label="Small" aria-describedby="inputGroupIva" id="txtIVA" disabled>
+                            <input type="text" class="form-control text-right" aria-label="Small" aria-describedby="inputGroupIva" id="txtIva" disabled>
                         </div>
                         <div class="input-group input-group-sm mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text" id="inputGroupMG">MG(%)</span>
+                                <span class="input-group-text" id="inputGroupPrecioVenta">Monto total</span>
                             </div>
-                            <input type="text" class="form-control text-right" aria-label="Small" aria-describedby="inputGroupMG" id="txtMG" disabled>
-                        </div>
-                        <div class="input-group input-group-sm mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="inputGroupTotal">Total</span>
-                            </div>
-                            <input type="text" class="form-control text-right" aria-label="Small" aria-describedby="inputGroupTotal" id="txtTotal" disabled>
+                            <input type="text" class="form-control text-right" aria-label="Small" aria-describedby="inputGroupPrecioVenta" id="txtPrecioVenta" disabled>
                         </div>
                     </div>
                 </div>
@@ -151,7 +148,7 @@
                 <div class="card shadow">
                     <div class="card-body">
                         <div class="form-group mb-0">
-                            <button class="btn btn-success btn-sm btn-block" id="btnPagoVenta">Terminar Venta</button>
+                            <button class="btn btn-success btn-sm btn-block" id="btnConfirmarVenta">Confirmar Venta</button>
                         </div>
                     </div>
                 </div>
@@ -281,6 +278,8 @@
 @section Scripts{
     <script src="~/vendor/select2/select2.min.js"></script>
     <script src="~/vendor/select2/es.min.js"></script>
+    <script src="~/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
     <script src="~/js/vistas/Nueva_Venta.js"></script>
     <script src="~/js/vistas/Cliente_Index.js"></script>

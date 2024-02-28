@@ -11,6 +11,9 @@
         public string? IdTalle { get; set; }
         public string? NombreTalle { get; set; }
         public int? EsActivo { get; set; }
-        public decimal? PrecioArticulo { get; set; }
+        public string? CostoArticulo { get; set; }
+        public string? IvaArticulo { get; set; }
+        public string? MargenGananciaArticulo { get; set; }
+
     }
 }

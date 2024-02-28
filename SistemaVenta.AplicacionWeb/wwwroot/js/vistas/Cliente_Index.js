@@ -99,6 +99,27 @@ $("#btnGuardar").click(function () {
         return;
     }
 
+    const condicionTributariaValidacion = $("#cboCondicionTributaria").val();
+    if (condicionTributariaValidacion === '8') {
+        const numeroDocumento = $("#txtNumeroDocumento").val();
+        if (numeroDocumento.length !== 7 && numeroDocumento.length !== 8) {
+            toastr.error("", "El número de documento debe tener 7 u 8 dígitos para la condición tributaria DNI");
+            $("#txtNumeroDocumento").focus();
+            return;
+        }
+    } else if (condicionTributariaValidacion === '5') {
+        $("#txtNumeroDocumento").val("0");
+    } else if (condicionTributariaValidacion === '6' || condicionTributariaValidacion === '7') {
+        const numeroDocumento = $("#txtNumeroDocumento").val();
+        if (numeroDocumento.length !== 11) {
+            toastr.error("", "El número de documento debe tener 11 dígitos para la condición tributaria CUIT/CUIL");
+            $("#txtNumeroDocumento").focus();
+            return;
+        }
+    }
+
+
+
     const modelo = structuredClone(MODELO_BASE);
     modelo["idCliente"] = parseInt($("#txtId").val())
     modelo["numeroDocumento"] = $("#txtNumeroDocumento").val()

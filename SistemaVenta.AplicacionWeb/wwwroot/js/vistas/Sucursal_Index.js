@@ -2,7 +2,21 @@
 
     $(".card-body").LoadingOverlay("show");
 
-    fetch("Sucursal/Obtener")
+    fetch("/CondicionTributaria/Lista")
+        .then(response => {
+            return response.ok ? response.json() : Promise.reject(response);
+        })
+        .then(responseJson => {
+            if (responseJson.data.length > 0) {
+                responseJson.data.forEach((item) => {
+                    $("#cboCondicionTributaria").append(
+                        $("<option>").val(item.idCondicionTributaria).text(item.nombre)
+                    )
+                })
+            }
+        })
+
+    fetch("/Sucursal/Obtener")
         .then(response => {
             $(".card-body").LoadingOverlay("hide");
             return response.ok ? response.json() : Promise.reject(response);
@@ -17,9 +31,7 @@
                 $("#txtDomicilio").val(d.domicilio)
                 $("#txtCiudad").val(d.ciudad)
                 $("#txTelefono").val(d.telefono)
-                $("#txtIva").val(d.iva)
-                $("#txtMargenGanancia").val(d.margenGanancia)
-                $("#txtSimboloMoneda").val(d.simboloMoneda)
+                $("#cboCondicionTributaria").val(d.idCondicionTributaria == 0 ? $("#cboCondicionTributaria option:first").val() : d.idCondicionTributaria)
        
             } else {
                 swal("Lo sentimos!", responseJson.mensaje, "error")
@@ -46,16 +58,16 @@ $("#btnGuardarCambios").click(function () {
         domicilio: $("#txtDomicilio").val(),
         ciudad: $("#txtCiudad").val(),
         telefono: $("#txTelefono").val(),
-        iva: $("#txtIva").val(),
-        margenGanancia: $("#txtMargenGanancia").val(),
-        simboloMoneda: $("#txtSimboloMoneda").val()
+        idCondicionTributaria: $("#cboCondicionTributaria").val()
     }
+
+    console.log(modelo);
     
     const formData = new FormData()
     formData.append("modelo", JSON.stringify(modelo))
 
     $(".card-body").LoadingOverlay("show");
-    fetch("Sucursal/GuardarCambios", {
+    fetch("/Sucursal/GuardarCambios", {
         method: "POST",
         body: formData
     })

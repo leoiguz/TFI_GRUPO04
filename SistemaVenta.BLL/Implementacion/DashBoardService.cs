@@ -56,7 +56,7 @@ namespace SistemaVenta.BLL.Implementacion
                 IQueryable<Venta> query = await _repositorioVenta.Consultar(v => v.FechaRegistro.Value.Date >= FechaInicio.Date);
 
                 decimal resultado = query
-                    .Select(v => v.SubTotal)
+                    .Select(v => v.NetoGravado)
                     .Sum(v => v.Value);
 
                 return Convert.ToString(Convert.ToDecimal(resultado)/100, new CultureInfo("es-AR"));

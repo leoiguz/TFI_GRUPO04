@@ -22,7 +22,8 @@ $(document).ready(function () {
                             documentoCliente: item.numeroDocumento,
                             nombreCliente: item.nombres,
                             apellidoCliente: item.apellidos,
-                            condicionTributaria: item.nombreCondicionTributaria
+                            condicionTributaria: item.nombreCondicionTributaria,
+                            condicionTributariaCodigo: item.codigoCondicionTributaria
                         }
                     ))
                 };
@@ -79,16 +80,15 @@ $("#cboBuscarCliente").on("select2:select", function (e) {
 
         let cliente = {
             idCliente: data.id,
-
             numeroDocumentoCliente: data.documentoCliente,
             nombresCliente: data.nombreCliente,
             apellidosCliente: data.apellidoCliente,
             nombreCondicionTributariaCliente: data.condicionTributaria,
+            codigoCondicionTributariaCliente: data.condicionTributariaCodigo
 
         }
 
         ClienteParaVenta.push(cliente)
-        console.log(cliente);
         mostrarCliente();
         mostrarTipoComprobante(data.condicionTributaria);
         $("#cboBuscarCliente").val("").trigger("change")
@@ -116,7 +116,7 @@ function mostrarCliente() {
     }) 
 
 }
-let TipoComprobante;
+let CodigoTipoComprobante;
 function mostrarTipoComprobante(condicionTributaria) {
 
     fetch(`/Venta/ObtenerTipoComprobante?busqueda=${condicionTributaria}`)
@@ -128,7 +128,7 @@ function mostrarTipoComprobante(condicionTributaria) {
             if (responseJson) {
                 const d = responseJson;
                 $("#txtTipoComprobante").val(d.descripcion);
-                TipoComprobante = d.idTipoComprobante;
+                CodigoTipoComprobante = d.codigo;
                 
             }
         })
@@ -139,34 +139,8 @@ function mostrarTipoComprobante(condicionTributaria) {
 }
 
 /*-------------------------------------------------------------BUSCAR INVENTARIO--------------------------------------------------------*/
-let ValorIVA = 0;
-let ValorMG = 0;
-let impuestosTotales = 0;
-let totalFinal = 0;
-
 
 $(document).ready(function () {
-
-    fetch("/Sucursal/Obtener")
-        .then(response => {
-            return response.ok ? response.json() : Promise.reject(response);
-        })
-        .then(responseJson => {
-
-            if (responseJson.estado) {
-
-                const d = responseJson.objeto;
-
-                $("#inputGroupSubTotal").text(`Sub total - ${d.simboloMoneda}`)
-                $("#inputGroupIva").text(`IVA(${d.iva}%) - ${d.simboloMoneda}`)
-                $("#inputGroupMG").text(`MG(${d.margenGanancia}%) - ${d.simboloMoneda}`)
-                $("#inputGroupTotal").text(`Total - ${d.simboloMoneda}`)
-
-                ValorIVA = d.iva
-                ValorMG = d.margenGanancia
-            }
-
-        })
 
     $("#cboBuscarInventario").select2({
         ajax: {
@@ -189,7 +163,9 @@ $(document).ready(function () {
                             articulo: item.nombreArticulo,
                             color: item.nombreColor,
                             talle: item.nombreTalle,
-                            precio: item.precioArticulo
+                            costo: item.costoArticulo,
+                            iva: item.ivaArticulo,
+                            margenGanancia: item.margenGananciaArticulo
                         }
                     ))
                 };
@@ -264,12 +240,11 @@ $("#cboBuscarInventario").on("select2:select", function (e) {
                 colorInventario: data.color,
                 talleInventario: data.talle,
                 cantidad: parseInt(valor),
-                precio: data.precio.toString(),
-                total: (parseFloat(valor) * data.precio).toString()
+                netoGravado: parseFloat(data.costo) + (parseFloat(data.costo) * (parseFloat(data.margenGanancia) / 100)),
+                iva: parseFloat(data.iva)/100,
+                margenGanancia: parseFloat(data.margenGanancia)/100
             }
-
-            console.log(inventario);
-
+            
             InventariosParaVenta.push(inventario)
 
             mostrarInventario_Precios();
@@ -280,19 +255,29 @@ $("#cboBuscarInventario").on("select2:select", function (e) {
 
 })
 
+let netoGravadoArticulo = 0;
+let netoGravadoTotal = 0;
+let ivaTotal = 0;
+let ivaArticulo = 0;
+let precioIndividual = 0;
+let precioVenta = 0;
+let precioTotal = 0;
+
 function mostrarInventario_Precios() {
 
-    let totalIVA = 0;
-    let totalMG = 0;
-    let IVA = 0;
-    let MG = 0;
-    let subtotal = 0;
 
     $("#tbInventario tbody").html("")
 
     InventariosParaVenta.forEach((item) => {
 
-        subtotal = subtotal + parseFloat(item.total)
+        netoGravadoArticulo = item.netoGravado;
+        ivaArticulo = netoGravadoArticulo * item.iva;
+        precioIndividual= (netoGravadoArticulo + ivaArticulo);
+        precioVenta = (netoGravadoArticulo + ivaArticulo) * item.cantidad;
+
+        netoGravadoTotal += netoGravadoArticulo;
+        ivaTotal += ivaArticulo;
+        precioTotal += precioVenta; 
 
         $("#tbInventario tbody").append(
             $("<tr>").append(
@@ -306,25 +291,14 @@ function mostrarInventario_Precios() {
                 $("<td>").text(item.colorInventario),
                 $("<td>").text(item.talleInventario),
                 $("<td>").text(item.cantidad),
-                $("<td>").text(item.precio),
-                $("<td>").text(item.total)
+                $("<td>").text(precioIndividual),
+                $("<td>").text(precioVenta)
             )
         )
+        $("#txtNetoGravado").val(netoGravadoTotal)
+        $("#txtIva").val(ivaTotal)
+        $("#txtPrecioVenta").val(precioTotal)
     })
-
-    totalIVA = subtotal * (1 + (ValorIVA) / 100);
-    totalMG = subtotal * (1 + (ValorMG) / 100);
-    IVA = totalIVA - subtotal;
-    MG = totalMG - subtotal;
-    totalFinal = subtotal + IVA + MG;
-
-    $("#txtSubTotal").val(parseFloat(subtotal).toFixed(2))
-    $("#txtIVA").val(parseFloat(IVA).toFixed(2))
-    $("#txtMG").val(parseFloat(MG).toFixed(2))
-    $("#txtTotal").val(parseFloat(totalFinal).toFixed(2))
-
-    impuestosTotales = IVA + MG;
-
 }
 
 $(document).on("click", "button.btn-eliminar", function () {
@@ -336,11 +310,96 @@ $(document).on("click", "button.btn-eliminar", function () {
     mostrarInventario_Precios();
 })
 
+/**--------------------------------------- Confirmar Venta ---------------------------------------------------------------**/
+
+$("#btnConfirmarVenta").click(function () {
+    if (InventariosParaVenta.length < 1) {
+        toastr.warning("", "Debe ingresar inventarios")
+        return;
+    }
+
+    if (ClienteParaVenta.length < 1) {
+        toastr.warning("", "Debe ingresar un cliente")
+        return;
+    }
+
+    const codigo = "4E6C1831-0C85-439F-AB55-02D4227CE970";
+
+    const options = {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(codigo) 
+    };
+
+    fetch('/Venta/SolicitarAutorizacion', options)
+        .then(response => {
+            if (!response.ok) {
+
+                throw new Error('Error al realizar la solicitud');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Token:', data.token);
+            if (data.token !== null) {
+
+                swal("Confirmado!", `Token : ${responseJson.data.token}`, "success");
+                mostrarModalPago();
+            }
+            else {
+                swal("Lo sentimos!", "No se pudo confirmar la venta", "error")
+            }
+            
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+
+ 
+})
+
+/*------------------------------------- PAGO ------------------------------------------*/
+
+const MODELO_BASE_PAGO = {
+    idPago: 0,
+    monto: 0,
+    idTipoPago: 0
+}
+
+$(document).ready(function () {
+
+    fetch("/TipoPago/Lista")
+        .then(response => {
+            return response.ok ? response.json() : Promise.reject(response);
+        })
+        .then(responseJson => {
+            if (responseJson.data.length > 0) {
+                responseJson.data.forEach((item) => {
+                    $("#cboTipoPago").append(
+                        $("<option>").val(item.idTipoPago).text(item.descripcion)
+                    )
+                })
+            }
+        })
+})
+
+function mostrarModalPago(modelo = MODELO_BASE_PAGO) {
+    $("#txtId").val(modelo.idPago)
+    $("#txtMonto").val(modelo.monto)
+    $("#cboTipoPago").val(modelo.idTipoPago == 0 ? $("#cboTipoPago option:first").val() : modelo.idTipoPago)
+    $("#txtTotalVenta").text(precioVenta);
+    $("#txtMonto").on("input", function () {
+        calcularCambio();
+    });
+    $("#modalPago").modal("show")
+}
+
+
 /*-------------------------------------------------------------TERMINAR VENTA--------------------------------------------------------*/
 $("#btnTerminarVenta").click(function () {
 
     const montoIngresado = parseFloat($("#txtMonto").val());
-    const totalVenta = parseFloat($("#txtTotalVenta").text());
+    const totalVenta = parseFloat($("#txtPrecioVenta").text());
 
     if (isNaN(montoIngresado) || montoIngresado < totalVenta) {
         toastr.warning("", "El monto ingresado debe ser igual o mayor al total de la venta");
@@ -349,16 +408,29 @@ $("#btnTerminarVenta").click(function () {
     }
 
     const vmDetalleVenta = InventariosParaVenta;
-
     const ultimoCliente = ClienteParaVenta[ClienteParaVenta.length - 1];
+
+    // Obtener la fecha actual
+    const fechaActual = new Date();
+
+    // Formatear la fecha según el formato deseado (por ejemplo, YYYY-MM-DD)
+    const dia = String(fechaActual.getDate()).padStart(2, '0');
+    const mes = String(fechaActual.getMonth() + 1).padStart(2, '0'); // Enero es 0!
+    const anio = fechaActual.getFullYear();
+
+    // Crear la cadena de fecha en formato YYYY-MM-DD
+    const fechaFormateada = `${dia}-${mes}-${anio}`;
 
     // Construir el objeto de venta con el nombre del cliente
     const venta = {
-        idTipoComprobante: TipoComprobante.toString(),
-        idCliente: ultimoCliente.idCliente.toString(),
-        subTotal: $("#txtSubTotal").val(),
-        impuestoTotal: impuestosTotales.toString(),
-        total: $("#txtTotal").val(),
+        fecha: fechaFormateada,
+        importeIva: $("#txtIva").val(),
+        importeNetoGravado: $("#txtNetoGravado").val(),
+        importeTotal: $("#txtPrecioVenta").val(),
+        numeroVenta: 1,
+        numeroDocumento: ultimoCliente.numeroDocumentoCliente,
+        tipoComprobante: CodigoTipoComprobante,
+        tipoDocumento: ultimoCliente.codigoCondicionTributariaCliente,
         detalleVenta: vmDetalleVenta
     };
 
@@ -392,54 +464,7 @@ $("#btnTerminarVenta").click(function () {
 
 })
 
-/*------------------------------------- PAGO ------------------------------------------*/
 
-const MODELO_BASE_PAGO = {
-    idPago: 0,
-    monto: 0,
-    idTipoPago: 0
-}
-
-$(document).ready(function () {
-
-    fetch("/TipoPago/Lista")
-        .then(response => {
-            return response.ok ? response.json() : Promise.reject(response);
-        })
-        .then(responseJson => {
-            if (responseJson.data.length > 0) {
-                responseJson.data.forEach((item) => {
-                    $("#cboTipoPago").append(
-                        $("<option>").val(item.idTipoPago).text(item.descripcion)
-                    )
-                })
-            }
-        })
-})
-
-function mostrarModalPago(modelo = MODELO_BASE_PAGO) {
-    $("#txtId").val(modelo.idPago)
-    $("#txtMonto").val(modelo.monto)
-    $("#cboTipoPago").val(modelo.idTipoPago == 0 ? $("#cboTipoPago option:first").val() : modelo.idTipoPago)
-    $("#txtTotalVenta").text(totalFinal);
-    $("#txtMonto").on("input", function () {
-        calcularCambio();
-    });
-    $("#modalPago").modal("show")
-}
-
-$("#btnPagoVenta").click(function () {
-    if (InventariosParaVenta.length < 1) {
-        toastr.warning("", "Debe ingresar inventarios")
-        return;
-    }
-
-    if (ClienteParaVenta.length < 1) {
-        toastr.warning("", "Debe ingresar un cliente")
-        return;
-    }
-    mostrarModalPago()
-})
 
 function calcularCambio() {
     // Obtener el monto pagado

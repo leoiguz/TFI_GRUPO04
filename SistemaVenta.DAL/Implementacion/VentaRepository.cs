@@ -48,7 +48,7 @@ namespace SistemaVenta.DAL.Implementacion
                     string numeroVenta = ceros + correlativo.UltimoNumero.ToString();
                     numeroVenta = numeroVenta.Substring(numeroVenta.Length - correlativo.CantidadDigitos.Value, correlativo.CantidadDigitos.Value);
 
-                    entidad.NumeroVenta = numeroVenta;
+                    entidad.NumeroComprobante = numeroVenta;
                     await _dbContext.Venta.AddAsync(entidad);
                     await _dbContext.SaveChangesAsync();
 

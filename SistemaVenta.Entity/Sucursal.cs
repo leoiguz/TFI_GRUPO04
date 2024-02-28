@@ -18,11 +18,11 @@ namespace SistemaVenta.Entity
         public string? Domicilio { get; set; }
         public string? Ciudad { get; set; }
         public string? Telefono { get; set; }
-        public decimal? Iva { get; set; }
-        public decimal? MargenGanancia { get; set; }
-        //public decimal? PorcentajeImpuesto { get; set; }
-        public string? SimboloMoneda { get; set; }
 
+        public int? IdCondicionTributaria { get; set; }
+
+
+        public virtual CondicionTributaria? IdCondicionTributariaNavigation { get; set; }
         public virtual ICollection<Empleado> Empleados { get; set; }
         public virtual ICollection<PuntoVenta> PuntoVenta { get; set; }
     }

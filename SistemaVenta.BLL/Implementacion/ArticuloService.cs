@@ -76,6 +76,7 @@ namespace SistemaVenta.BLL.Implementacion
                 articulo_editar.IdCategoria = entidad.IdCategoria;
                 articulo_editar.IdTipoTalle = entidad.IdTipoTalle;
                 articulo_editar.Costo = entidad.Costo;
+                articulo_editar.Iva = entidad.Iva;
                 articulo_editar.EsActivo = entidad.EsActivo;
 
                 bool respuesta = await _repositorio.Editar(articulo_editar);

@@ -10,6 +10,7 @@
         public string? Domicilio { get; set; }
         public int? IdCondicionTributaria { get; set; }
         public string? NombreCondicionTributaria { get; set; }
+        public string? CodigoCondicionTributaria { get; set; }
         public int? EsActivo { get; set; }
     }
 }

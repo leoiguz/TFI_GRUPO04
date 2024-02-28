@@ -5,7 +5,9 @@
     idTipoTalle: 0,
     descripcion: "",
     idCategoria: 0,
-    costo: 0,
+    costo: "",
+    iva: "",
+    margenGanancia: "",
     esActivo: 1
 
 }
@@ -68,7 +70,19 @@ $(document).ready(function () {
             { "data": "nombreTipoTalle" },
             { "data": "descripcion" },
             { "data": "nombreCategoria" },
-            { "data": "costo" },
+            {
+                "data": null, "render": function (data, type, row) {
+                    // Calcular el precio de venta
+                    var costo = parseFloat(row.costo);
+                    var margenGanancia = parseFloat(row.margenGanancia);
+                    var iva = parseFloat(row.iva);
+                    var netoGravado = costo + (costo * (margenGanancia / 100));
+                    var precioVenta = netoGravado + (netoGravado * (iva / 100));
+
+                    // Devolver el precio de venta formateado como moneda
+                    return '$' + precioVenta.toFixed(2);
+                }
+            },
             { "data": "esActivo", render: function (data) { if (data == 1) return '<span class="badge badge-info">Activo</span>'; else return '<span class="badge badge-danger">No Activo</span>'; } },
             {
                 "defaultContent": '<button class="btn btn-primary btn-editar btn-sm mr-2"><i class="fas fa-pencil-alt"></i></button>' +
@@ -105,7 +119,10 @@ function mostrarModal(modelo = MODELO_BASE) {
     $("#txtDescripcion").val(modelo.descripcion)
     $("#cboCategoria").val(modelo.idCategoria == 0 ? $("#cboCategoria option:first").val() : modelo.idCategoria)
     $("#txtCosto").val(modelo.costo)
+    $("#txtIva").val(modelo.iva)
+    $("#txtMargenGanancia").val(modelo.margenGanancia)
     $("#cboEstado").val(modelo.esActivo)
+
     $("#modalData").modal("show")
 }
 
@@ -133,6 +150,8 @@ $("#btnGuardar").click(function () {
     modelo["descripcion"] = $("#txtDescripcion").val()
     modelo["idCategoria"] = $("#cboCategoria").val()
     modelo["costo"] = $("#txtCosto").val()
+    modelo["iva"] = $("#txtIva").val()
+    modelo["margenGanancia"] = $("#txtMargenGanancia").val()
     modelo["esActivo"] = $("#cboEstado").val()
 
     const formData = new FormData();

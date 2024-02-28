@@ -17,6 +17,8 @@ namespace SistemaVenta.Entity
         public bool? EsActivo { get; set; }
         public DateTime? FechaRegistro { get; set; }
 
+        public string? Codigo { get; set; }
+
         //public virtual CondicionTributaria? IdCondicionTributariaNavigation { get; set; }
 
         public virtual ICollection<CondicionTributaria> CondicionTributaria { get; set; }

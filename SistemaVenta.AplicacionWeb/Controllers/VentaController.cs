@@ -9,6 +9,8 @@ using DinkToPdf;
 using DinkToPdf.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using AFIPService;
+using NuGet.Protocol.Plugins;
 
 namespace SistemaVenta.AplicacionWeb.Controllers
 {
@@ -58,11 +60,31 @@ namespace SistemaVenta.AplicacionWeb.Controllers
         }
 
         [HttpPost]
+        public async Task<ActionResult> SolicitarAutorizacion(string codigo)
+        {
+            try
+            {
+                var cliente = new LoginServiceClient();
+
+                var token = await cliente.SolicitarAutorizacionAsync(codigo);
+                cliente.Close();
+
+                return StatusCode(StatusCodes.Status200OK, token);
+            }
+            catch (Exception ex)
+            {
+                // Maneja cualquier excepción que ocurra durante la solicitud
+                return Json(new { Error = ex.Message });
+            }
+        }
+
+        [HttpPost]
         public async Task<IActionResult> RegistrarVenta([FromBody] VMVenta modelo) { 
             GenericResponse<VMVenta> gResponse = new GenericResponse<VMVenta>();
 
             try
             {
+
                 ClaimsPrincipal claimUser = HttpContext.User;
                 string idUsuario = claimUser.Claims
                     .Where(c => c.Type == ClaimTypes.NameIdentifier)
@@ -133,5 +155,7 @@ namespace SistemaVenta.AplicacionWeb.Controllers
             return File(archivoPDF, "application/pdf");
 
         }
+
+
     }
 }

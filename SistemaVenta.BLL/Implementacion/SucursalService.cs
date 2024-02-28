@@ -13,12 +13,10 @@ namespace SistemaVenta.BLL.Implementacion
     public class SucursalService : ISucursalService
     {
         private readonly IGenericRepository<Sucursal> _repositorio;
-        private readonly IFireBaseService _firebaseService;
 
-        public SucursalService(IGenericRepository<Sucursal> repositorio, IFireBaseService firebaseService)
+        public SucursalService(IGenericRepository<Sucursal> repositorio)
         {
             _repositorio = repositorio;
-            _firebaseService = firebaseService;
         }
         public async Task<Sucursal> Obtener()
         {
@@ -44,9 +42,7 @@ namespace SistemaVenta.BLL.Implementacion
                 sucursal_encontrado.Domicilio = entidad.Domicilio;
                 sucursal_encontrado.Ciudad = entidad.Ciudad;
                 sucursal_encontrado.Telefono = entidad.Telefono;
-                sucursal_encontrado.Iva = entidad.Iva;
-                sucursal_encontrado.MargenGanancia = entidad.MargenGanancia;
-                sucursal_encontrado.SimboloMoneda = entidad.SimboloMoneda;
+                sucursal_encontrado.IdCondicionTributaria = entidad.IdCondicionTributaria;
 
                 await _repositorio.Editar(sucursal_encontrado);
                 return sucursal_encontrado;

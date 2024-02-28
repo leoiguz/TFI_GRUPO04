@@ -82,7 +82,7 @@ namespace SistemaVenta.BLL.Implementacion
             else
             {
                 return querry.Where(v =>
-                v.NumeroVenta == numeroVenta
+                v.NumeroComprobante == numeroVenta
                     )
                     .Include(tdv => tdv.IdTipoComprobanteNavigation)
                     .Include(c => c.IdClienteNavigation)
@@ -94,7 +94,7 @@ namespace SistemaVenta.BLL.Implementacion
         }
         public async Task<Venta> Detalle(string numeroVenta) //solo para una venta en especifico
         {
-            IQueryable<Venta> querry = await _repositorioVenta.Consultar(v => v.NumeroVenta == numeroVenta);
+            IQueryable<Venta> querry = await _repositorioVenta.Consultar(v => v.NumeroComprobante == numeroVenta);
 
             return querry
                      .Include(tdv => tdv.IdTipoComprobanteNavigation)
