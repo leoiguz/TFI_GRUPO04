@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 using SistemaVenta.Entity;
 
 namespace SistemaVenta.DAL.DBContext
@@ -41,6 +38,8 @@ namespace SistemaVenta.DAL.DBContext
         public virtual DbSet<TipoPago> TipoPagos { get; set; } = null!;
         public virtual DbSet<Usuario> Usuarios { get; set; } = null!;
         public virtual DbSet<Venta> Venta { get; set; } = null!;
+        public virtual DbSet<Tarjeta> Tarjeta { get; set; } = null!;
+        public virtual DbSet<AFIP> AFIP { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -272,6 +271,16 @@ namespace SistemaVenta.DAL.DBContext
                     .IsUnicode(false)
                     .HasColumnName("nombreArticulo");
 
+                entity.Property(e => e.TalleInventario)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("talleInventario");
+
+                entity.Property(e => e.ColorInventario)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("colorInventario");
+
                 entity.Property(e => e.IdInventario).HasColumnName("idInventario");
 
                 entity.Property(e => e.IdVenta).HasColumnName("idVenta");
@@ -280,13 +289,13 @@ namespace SistemaVenta.DAL.DBContext
                     .HasColumnType("decimal(10, 2)")
                     .HasColumnName("netoGravado");
 
-                entity.Property(e => e.MontoIva)
+                entity.Property(e => e.MargenGanancia)
                     .HasColumnType("decimal(10, 2)")
-                    .HasColumnName("montoIva");
+                    .HasColumnName("margenGanancia");
 
-                entity.Property(e => e.PorcentajeIva)
+                entity.Property(e => e.Iva)
                     .HasColumnType("decimal(10, 2)")
-                    .HasColumnName("porcentajeIva");
+                    .HasColumnName("iva");
 
                 entity.Property(e => e.Total)
                     .HasColumnType("decimal(10, 2)")
@@ -879,6 +888,67 @@ namespace SistemaVenta.DAL.DBContext
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("estado");
+            });
+
+            modelBuilder.Entity<Tarjeta>(entity =>
+            {
+                entity.HasKey(e => e.IdTarjeta)
+                    .HasName("PK__Tarjeta__C456D53871DCA104");
+
+                entity.ToTable("Tarjeta");
+
+                entity.Property(e => e.IdTarjeta).HasColumnName("idTarjeta");
+
+                entity.Property(e => e.NumeroTarjeta)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("numeroTarjeta");
+
+                entity.Property(e => e.MesTarjeta)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("mesTarjeta");
+
+                entity.Property(e => e.AnioTarjeta)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("anioTarjeta");
+
+                entity.Property(e => e.CodigoSeguridadTarjeta)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("codigoSeguridadTarjeta");
+
+                entity.Property(e => e.NombreTarjeta)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("nombreTarjeta");
+            });
+
+            modelBuilder.Entity<AFIP>(entity =>
+            {
+                entity.HasKey(e => e.IdAFIP)
+                    .HasName("PK__AFIP__EC87626F6D9F50E7");
+
+                entity.ToTable("AFIP");
+
+                entity.Property(e => e.IdAFIP).HasColumnName("idAFIP");
+
+                entity.Property(e => e.Token)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false)
+                    .HasColumnName("token");
+
+                entity.Property(e => e.Cae)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false)
+                    .HasColumnName("cae");
+
+                entity.Property(e => e.VencimientoToken)
+                    .HasColumnType("datetime2")
+                    .HasColumnName("vencimientoToken")
+                    .HasDefaultValueSql("(getdate())");
+
             });
 
             OnModelCreatingPartial(modelBuilder);

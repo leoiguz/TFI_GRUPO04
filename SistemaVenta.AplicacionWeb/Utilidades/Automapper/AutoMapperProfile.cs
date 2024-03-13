@@ -330,11 +330,23 @@ namespace SistemaVenta.AplicacionWeb.Utilidades.Automapper
 
             #endregion Pago
 
+            #region Tarjeta
+            CreateMap<Tarjeta, VMTarjeta>().ReverseMap();
+            #endregion Tarjeta
+
+            #region AFIP
+            CreateMap<AFIP, VMAFIP>().ReverseMap();
+            #endregion AFIP
+
             #region Venta
             CreateMap<Venta, VMVenta>()
             .ForMember(destino =>
             destino.TipoComprobante,
             opt => opt.MapFrom(origen => origen.IdTipoComprobanteNavigation.Descripcion)
+            )
+            .ForMember(destino =>
+            destino.TipoDocumentoCliente,
+            opt => opt.MapFrom(origen => origen.IdClienteNavigation.IdCondicionTributariaNavigation.Codigo)
             )
             .ForMember(destino =>
             destino.Usuario,
@@ -387,38 +399,30 @@ namespace SistemaVenta.AplicacionWeb.Utilidades.Automapper
             #region DetalleVenta
             CreateMap<DetalleVenta, VMDetalleVenta>()
             .ForMember(destino =>
-            destino.MontoIva,
-            opt => opt.MapFrom(origen => Convert.ToString(origen.MontoIva.Value, new CultureInfo("es-AR")))
+            destino.Iva,
+            opt => opt.MapFrom(origen => Convert.ToString(origen.Iva.Value, new CultureInfo("es-AR")))
             )
             .ForMember(destino =>
             destino.NetoGravado,
             opt => opt.MapFrom(origen => Convert.ToString(origen.NetoGravado.Value, new CultureInfo("es-AR")))
             )
             .ForMember(destino =>
-            destino.PorcentajeIva,
-            opt => opt.MapFrom(origen => Convert.ToString(origen.PorcentajeIva.Value, new CultureInfo("es-AR")))
-            )
-            .ForMember(destino =>
-            destino.Total,
-            opt => opt.MapFrom(origen => Convert.ToString(origen.Total.Value, new CultureInfo("es-AR")))
+            destino.MargenGanancia,
+            opt => opt.MapFrom(origen => Convert.ToString(origen.MargenGanancia.Value, new CultureInfo("es-AR")))
             );
 
             CreateMap<VMDetalleVenta, DetalleVenta>()
             .ForMember(destino =>
-            destino.MontoIva,
-            opt => opt.MapFrom(origen => Convert.ToDecimal(origen.MontoIva, new CultureInfo("es-AR")))
+            destino.Iva,
+            opt => opt.MapFrom(origen => Convert.ToDecimal(origen.Iva, new CultureInfo("es-AR")))
             )
             .ForMember(destino =>
             destino.NetoGravado,
             opt => opt.MapFrom(origen => Convert.ToDecimal(origen.NetoGravado, new CultureInfo("es-AR")))
             )
             .ForMember(destino =>
-            destino.PorcentajeIva,
-            opt => opt.MapFrom(origen => Convert.ToDecimal(origen.PorcentajeIva, new CultureInfo("es-AR")))
-            )
-            .ForMember(destino =>
-            destino.Total,
-            opt => opt.MapFrom(origen => Convert.ToDecimal(origen.Total, new CultureInfo("es-AR")))
+            destino.MargenGanancia,
+            opt => opt.MapFrom(origen => Convert.ToDecimal(origen.MargenGanancia, new CultureInfo("es-AR")))
             );
 
             CreateMap<DetalleVenta, VMReporteVenta>()
@@ -452,7 +456,7 @@ namespace SistemaVenta.AplicacionWeb.Utilidades.Automapper
             )
             .ForMember(destino =>
             destino.Precio,
-            opt => opt.MapFrom(origen => Convert.ToString(origen.PorcentajeIva.Value, new CultureInfo("es-AR")))
+            opt => opt.MapFrom(origen => Convert.ToString(origen.Iva.Value, new CultureInfo("es-AR")))
             )
             .ForMember(destino =>
             destino.NombreArticulo,

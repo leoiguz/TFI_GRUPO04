@@ -19,13 +19,15 @@ namespace SistemaVenta.BLL.Implementacion
         private readonly IVentaRepository _repositorioVenta;
         private readonly IGenericRepository<Cliente> _repositorioCliente;
         private readonly IGenericRepository<TipoComprobante> _repositorioTipoComprobante;
-        IGenericRepository<CondicionTributaria> _repositorioCondicionTributaria;
+        private readonly IGenericRepository<AFIP> _repositorioAFIP;
+        private readonly IGenericRepository<CondicionTributaria> _repositorioCondicionTributaria;
 
         public VentaService(IGenericRepository<Inventario> repositorioInventario,
            IVentaRepository repositorioVenta,
            IGenericRepository<Cliente> repositorioCliente,
            IGenericRepository<TipoComprobante> repositorioTipoComprobante,
-            IGenericRepository<CondicionTributaria> repositorioCondicionTributaria
+           IGenericRepository<CondicionTributaria> repositorioCondicionTributaria,
+           IGenericRepository<AFIP> repositorioAFIP
            )
         {
             _repositorioInventario = repositorioInventario;
@@ -33,7 +35,8 @@ namespace SistemaVenta.BLL.Implementacion
             _repositorioCliente = repositorioCliente;
             _repositorioTipoComprobante = repositorioTipoComprobante;
             _repositorioCondicionTributaria = repositorioCondicionTributaria;
-        }
+            _repositorioAFIP = repositorioAFIP;
+    }
         public async Task<List<Inventario>> ObtenerInventario(string busqueda)
         {
             IQueryable<Inventario> querry = await _repositorioInventario.Consultar(
@@ -142,6 +145,38 @@ namespace SistemaVenta.BLL.Implementacion
                 // Si no se encontró la condición tributaria, devuelve null o realiza algún manejo de errores apropiado
                 return null;
             }
+        }
+
+        public async Task<AFIP> ObtenerDatosAFIP()
+        {
+            try
+            {
+                AFIP afip = await _repositorioAFIP.Obtener(c => c.IdAFIP == 1);
+
+                return afip;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public async Task<AFIP> EditarAfip(AFIP entidad)
+        {
+            try
+            {
+                AFIP afip_encontrado = await _repositorioAFIP.Obtener(c => c.IdAFIP == entidad.IdAFIP);
+                afip_encontrado.Token = entidad.Token;
+                afip_encontrado.VencimientoToken = entidad.VencimientoToken;
+                afip_encontrado.Cae = entidad.Cae;
+
+                bool respuesta = await _repositorioAFIP.Editar(afip_encontrado);
+
+                if (!respuesta) throw new TaskCanceledException("No se pudo modificar el color");
+
+                return afip_encontrado;
+            }
+            catch { throw; }
         }
     }
 }

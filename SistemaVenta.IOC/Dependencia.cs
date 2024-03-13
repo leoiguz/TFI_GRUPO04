@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
-using System.Runtime.CompilerServices;
-
-using SistemaVenta.DAL.DBContext;
-using SistemaVenta.DAL.Interfaces;
-using SistemaVenta.DAL.Implementacion;
-using SistemaVenta.BLL.Interfaces;
 using SistemaVenta.BLL.Implementacion;
-using SistemaVenta.Entity;
+using SistemaVenta.BLL.Interfaces;
+using SistemaVenta.DAL.DBContext;
+using SistemaVenta.DAL.Implementacion;
+using SistemaVenta.DAL.Interfaces;
 
 namespace SistemaVenta.IOC
 {

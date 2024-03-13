@@ -240,9 +240,9 @@ $("#cboBuscarInventario").on("select2:select", function (e) {
                 colorInventario: data.color,
                 talleInventario: data.talle,
                 cantidad: parseInt(valor),
-                netoGravado: parseFloat(data.costo) + (parseFloat(data.costo) * (parseFloat(data.margenGanancia) / 100)),
-                iva: parseFloat(data.iva)/100,
-                margenGanancia: parseFloat(data.margenGanancia)/100
+                netoGravado: (parseFloat(data.costo) + (parseFloat(data.costo) * (parseFloat(data.margenGanancia) / 100))).toString(),
+                iva: (parseFloat(data.iva)/100).toString(),
+                margenGanancia: (parseFloat(data.margenGanancia)/100).toString()
             }
             
             InventariosParaVenta.push(inventario)
@@ -270,8 +270,8 @@ function mostrarInventario_Precios() {
 
     InventariosParaVenta.forEach((item) => {
 
-        netoGravadoArticulo = item.netoGravado;
-        ivaArticulo = netoGravadoArticulo * item.iva;
+        netoGravadoArticulo = parseFloat(item.netoGravado);
+        ivaArticulo = netoGravadoArticulo * parseFloat(item.iva);
         precioIndividual= (netoGravadoArticulo + ivaArticulo);
         precioVenta = (netoGravadoArticulo + ivaArticulo) * item.cantidad;
 
@@ -311,8 +311,22 @@ $(document).on("click", "button.btn-eliminar", function () {
 })
 
 /**--------------------------------------- Confirmar Venta ---------------------------------------------------------------**/
+let fechaActual = new Date();
+let fechaVencimiento = new Date();
+let miToken;
+let UltimosComprobantes;
+
+let modeloAFIP = {
+    idAFIP: '',
+    token: '',
+    cae: '',
+    vencimientoToken: null
+};
 
 $("#btnConfirmarVenta").click(function () {
+    
+
+    // Verifica las condiciones después de obtener los datos de AFIP
     if (InventariosParaVenta.length < 1) {
         toastr.warning("", "Debe ingresar inventarios")
         return;
@@ -323,39 +337,96 @@ $("#btnConfirmarVenta").click(function () {
         return;
     }
 
-    const codigo = "4E6C1831-0C85-439F-AB55-02D4227CE970";
 
-    const options = {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(codigo) 
-    };
-
-    fetch('/Venta/SolicitarAutorizacion', options)
+    $("#modalData").find("div.modal-content").LoadingOverlay("show");
+    fetch(`/Venta/ObtenerAFIP`)
         .then(response => {
-            if (!response.ok) {
-
-                throw new Error('Error al realizar la solicitud');
-            }
-            return response.json();
+            return response.ok ? response.json() : Promise.reject(response);
         })
-        .then(data => {
-            console.log('Token:', data.token);
-            if (data.token !== null) {
+        .then(responseJson => {
+            // Procesa los datos de AFIP
+            const d = responseJson;
+            modeloAFIP = {
+                idAFIP: d.idAFIP,
+                token: d.token,
+                cae: d.cae,
+                vencimientoToken: new Date(d.vencimientoToken) // Convierte la cadena de fecha en un objeto Date
+            };            
 
-                swal("Confirmado!", `Token : ${responseJson.data.token}`, "success");
-                mostrarModalPago();
-            }
-            else {
-                swal("Lo sentimos!", "No se pudo confirmar la venta", "error")
-            }
-            
+            // Verifica la fecha de vencimiento del token
+            if (modeloAFIP.vencimientoToken < fechaActual || modeloAFIP.vencimientoToken == null) {
+                const codigo = '4E6C1831-0C85-439F-AB55-02D4227CE970';
+
+                const requisitosToken = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(codigo)
+                };
+
+                // Realiza la solicitud de autorización si es necesario
+                fetch('/Venta/SolicitarAutorizacion', requisitosToken)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Error al realizar la solicitud');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Procesa la respuesta de la solicitud de autorización
+                        if (data.token !== null) {                  
+                            modeloAFIP.token = data.token;
+                            modeloAFIP.vencimientoToken = data.vencimiento;
+                            fechaVencimiento = data.vencimiento;
+
+                            fetch("/Venta/EditarAFIP", {
+                                method: "PUT",
+                                headers: { "Content-Type": "application/json; charset=utf-8" },
+                                body: JSON.stringify(modeloAFIP)
+                            })
+                                .then(response => {
+                                    return response.ok ? response.json() : Promise.reject(response);
+                                })                         
+
+                        } else {
+                            swal("Lo sentimos!", "No se pudo confirmar la venta", "error")
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }     
+
+            miToken = modeloAFIP.token;
+
+            const requisitosUltimosComprobantes = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(miToken)
+            };
+
+            $("#modalData").find("div.modal-content").LoadingOverlay("show");
+            fetch('/Venta/SolicitarUltimosComprobantes', requisitosUltimosComprobantes)
+                .then(response => {
+                    if (!response.ok) {
+
+                        throw new Error('Error al realizar la solicitud');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    UltimosComprobantes = data.comprobantes;
+                    $("#modalData").find("div.modal-content").LoadingOverlay("hide");
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
         })
         .catch(error => {
-            console.error('Error:', error);
+            console.error('Error al obtener datos AFIP:', error);
         });
 
- 
+    mostrarModalPago();
+
 })
 
 /*------------------------------------- PAGO ------------------------------------------*/
@@ -383,23 +454,62 @@ $(document).ready(function () {
         })
 })
 
+let tarjeta = document.getElementById('Tarjeta');
+
 function mostrarModalPago(modelo = MODELO_BASE_PAGO) {
+
+    const cboTipoPago = document.getElementById('cboTipoPago');
+    const efectivo = document.getElementById('Efectivo');
+
     $("#txtId").val(modelo.idPago)
     $("#txtMonto").val(modelo.monto)
-    $("#cboTipoPago").val(modelo.idTipoPago == 0 ? $("#cboTipoPago option:first").val() : modelo.idTipoPago)
+    cboTipoPago.addEventListener('change', function () {
+        // Obtener el valor seleccionado del tipo de pago
+        const tipoPago = cboTipoPago.value;
+
+        // Mostrar u ocultar los campos según el tipo de pago seleccionado
+        if (tipoPago === '1') {
+            efectivo.style.display = 'block';
+            tarjeta.style.display = 'none';
+        } else if (tipoPago === '2') {
+            efectivo.style.display = 'none';
+            tarjeta.style.display = 'block';
+            mostrarCamposTarjeta();
+        } else {
+            // En caso de otro tipo de pago, ocultar ambos conjuntos de campos
+            efectivo.style.display = 'none';
+            tarjeta.style.display = 'none';
+        }
+    });
+
     $("#txtTotalVenta").text(precioVenta);
     $("#txtMonto").on("input", function () {
         calcularCambio();
     });
+
     $("#modalPago").modal("show")
 }
 
 
+
 /*-------------------------------------------------------------TERMINAR VENTA--------------------------------------------------------*/
+let binPago;
+let idPago;
+
 $("#btnTerminarVenta").click(function () {
 
+ 
     const montoIngresado = parseFloat($("#txtMonto").val());
-    const totalVenta = parseFloat($("#txtPrecioVenta").text());
+    const totalVenta = parseFloat($("#txtTotalVenta").text());
+
+    const numeroTarjeta = document.getElementById("txtNumeroTarjeta").value;
+    const inputMesTarjeta = document.getElementById("txtMesTarjeta");
+    const mesTarjeta = inputMesTarjeta.value.trim();
+    const inputAnioTarjeta = document.getElementById("txtAnioTarjeta");
+    const anioTarjeta = inputAnioTarjeta.value.trim();
+    const inputCodigoTarjeta = document.getElementById("txtCodigoTarjeta");
+    const codigoTarjeta = inputCodigoTarjeta.value.trim();
+
 
     if (isNaN(montoIngresado) || montoIngresado < totalVenta) {
         toastr.warning("", "El monto ingresado debe ser igual o mayor al total de la venta");
@@ -407,34 +517,243 @@ $("#btnTerminarVenta").click(function () {
         return;
     }
 
+    if (numeroTarjeta.length !== 16 && tarjeta.style.display === 'block') {
+        toastr.warning("", "El número de tarjeta debe tener 16 caracteres");
+        $("#txtNumeroTarjeta").focus();
+        return;
+    }
+
+    if (mesTarjeta.length !== 2 && tarjeta.style.display === 'block') {
+        toastr.warning("", "El mes de tarjeta debe tener 2 caracteres");
+        $("#txtMesTarjeta").focus();
+        return;
+    }
+
+    if (anioTarjeta.length !== 2 && tarjeta.style.display === 'block') {
+        toastr.warning("", "El año de tarjeta debe tener 2 caracteres");
+        $("#txtAnioTarjeta").focus();
+        return;
+    }
+
+    if (codigoTarjeta.length !== 3 && tarjeta.style.display === 'block') {
+        toastr.warning("", "El código de seguridad de la tarjeta debe tener 3 dígitos");
+        $("#txtCodigoTarjeta").focus();
+        return;
+    }
+
+    const ultimoCliente = ClienteParaVenta[ClienteParaVenta.length - 1];
+    let numeroComprobante = 0;
+
+    UltimosComprobantes.forEach((ultComp) => {
+        if (ultComp.id === parseInt(CodigoTipoComprobante)) {
+            numeroComprobante = ultComp.numero;
+        }
+    });
+
+
+    function obtenerFechaHoraActual() {
+        var fecha = new Date(); // Obtiene la fecha y hora actual
+        var año = fecha.getFullYear(); // Obtiene el año
+        var mes = pad(fecha.getMonth() + 1); // Obtiene el mes (se suma 1 porque los meses comienzan desde 0)
+        var dia = pad(fecha.getDate()); // Obtiene el día del mes
+        var horas = pad(fecha.getHours()); // Obtiene las horas
+        var minutos = pad(fecha.getMinutes()); // Obtiene los minutos
+        var segundos = pad(fecha.getSeconds()); // Obtiene los segundos
+
+        // Formatea la fecha y hora en el formato xs:dateTime (ISO 8601)
+        var fechaHoraFormateada = año + '-' + mes + '-' + dia + 'T' + horas + ':' + minutos + ':' + segundos;
+
+        return fechaHoraFormateada;
+    }
+
+    function pad(numero) {
+        return numero < 10 ? '0' + numero : numero;
+    }
+
+    const ventaSolicitarCae = {
+        token: miToken,
+        fecha: fechaActual = obtenerFechaHoraActual(),              
+        importeIva: parseFloat($("#txtIva").val()),
+        importeNeto: parseFloat($("#txtNetoGravado").val()),
+        importeTotal: parseFloat($("#txtPrecioVenta").val()),
+        numero: numeroComprobante,
+        numeroDocumento: parseInt(ultimoCliente.numeroDocumentoCliente),
+        tipoComprobante: parseInt(CodigoTipoComprobante),
+        tipoDocumento: parseInt(ultimoCliente.codigoCondicionTributariaCliente)       
+    };
+    console.log(ventaSolicitarCae);
+    const requisitosCae = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(ventaSolicitarCae )
+    };
+    $("#btnTerminarVenta").LoadingOverlay("show");
+    $("#modalData").find("div.modal-content").LoadingOverlay("show");
+    fetch("/Venta/SolicitarCae", requisitosCae)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error al realizar la solicitud');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Maneja la respuesta del servidor aquí
+            console.log(data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+
+   
+    if (tarjeta.style.display === 'block') {
+
+        const cardData = {
+            card_number: $("#txtNumeroTarjeta").val(),
+            card_expiration_month: $("#txtMesTarjeta").val(),
+            card_expiration_year: $("#txtAnioTarjeta").val(),
+            security_code: $("#txtCodigoTarjeta").val(),
+            card_holder_name: $("#txtNombreTarjeta").val(),
+            card_holder_identification: {
+                type: ultimoCliente.nombreCondicionTributariaCliente,
+                number: ultimoCliente.numeroDocumentoCliente
+            }
+        };
+
+        const requisitosTokenPago = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'apikey': 'b192e4cb99564b84bf5db5550112adea'
+            },
+            body: JSON.stringify(cardData)
+        };
+
+        fetch('https://developers.decidir.com/api/v2/tokens', requisitosTokenPago)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al solicitar el token de pago');
+                }
+                return response.json();
+            })
+            .then(data => {
+                $("#modalData").find("div.modal-content").LoadingOverlay("hide");
+                idPago = data.id;
+                binPago = data.bin.slice(0, -2);
+
+                const cardData2 = {
+
+                    site_transaction_id: (numeroComprobante + 1).toString(),
+                    payment_method_id: 1,
+                    token: idPago,
+                    bin: binPago,
+                    amount: montoIngresado,
+                    currency: "ARS",
+                    installments: 1,
+                    description: "",
+                    payment_type: "single",
+                    establishment_name: "single",
+                    sub_payments: [{
+                        site_id: "",
+                        amount: montoIngresado,
+                        installments: null
+                    }]
+                }
+
+                const requisitosPago = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': '566f2c897b5e4bfaa0ec2452f5d67f13'
+                    },
+                    body: JSON.stringify(cardData2)
+                };
+
+
+                fetch('https://developers.decidir.com/api/v2/payments', requisitosPago)
+                    .then(response => {
+                        if (!response.ok) {
+                            $("#btnTerminarVenta").LoadingOverlay("hide");
+                            $("#modalPago").modal("hide")
+                            throw new Error('Error al solicitar el pago');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Pago:', data);
+                        registrarVenta();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        swal("Lo sentimos!", "No se pudo registrar la venta", "error")
+                    });
+
+
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+
+    } else {
+        registrarVenta();
+    }
+   
+
+})
+
+
+
+
+function calcularCambio() {
+
+    const montoPagado = parseFloat($("#txtMonto").val());
+    const totalVenta = parseFloat($("#txtTotalVenta").text());
+
+    const cambio = montoPagado - totalVenta;
+
+    if (cambio >= 0) {
+        $("#txtCambio").text(cambio.toFixed(2));
+    } else {
+        $("#txtCambio").text("");
+    }
+}
+
+
+const MODELO_BASE_TARJETA = {
+    idTarjeta: 0,
+    numeroTarjeta: "",
+    mesTarjeta: "",
+    anioTarjeta: "",
+    nombreTarjeta: "",
+    codigoSeguridadTarjeta: ""
+}
+
+function mostrarCamposTarjeta(modelo = MODELO_BASE_TARJETA) {
+
+    $("#txtNumeroTarjeta").val(modelo.numeroTarjeta)
+    $("#txtMesTarjeta").val(modelo.MesTarjeta)
+    $("#txtAnioTarjeta").val(modelo.AnioTarjeta)
+    $("#txtNombreTarjeta").val(modelo.nombreTarjeta)
+    $("#txtCodigoTarjeta").val(modelo.codigoSeguridadTarjeta)
+
+    $("#modalPago").modal("show")
+}
+
+
+function registrarVenta() {
+
     const vmDetalleVenta = InventariosParaVenta;
     const ultimoCliente = ClienteParaVenta[ClienteParaVenta.length - 1];
 
-    // Obtener la fecha actual
-    const fechaActual = new Date();
-
-    // Formatear la fecha según el formato deseado (por ejemplo, YYYY-MM-DD)
-    const dia = String(fechaActual.getDate()).padStart(2, '0');
-    const mes = String(fechaActual.getMonth() + 1).padStart(2, '0'); // Enero es 0!
-    const anio = fechaActual.getFullYear();
-
-    // Crear la cadena de fecha en formato YYYY-MM-DD
-    const fechaFormateada = `${dia}-${mes}-${anio}`;
-
-    // Construir el objeto de venta con el nombre del cliente
     const venta = {
-        fecha: fechaFormateada,
-        importeIva: $("#txtIva").val(),
-        importeNetoGravado: $("#txtNetoGravado").val(),
-        importeTotal: $("#txtPrecioVenta").val(),
-        numeroVenta: 1,
-        numeroDocumento: ultimoCliente.numeroDocumentoCliente,
         tipoComprobante: CodigoTipoComprobante,
-        tipoDocumento: ultimoCliente.codigoCondicionTributariaCliente,
-        detalleVenta: vmDetalleVenta
-    };
-
-    $("#btnTerminarVenta").LoadingOverlay("show");
+        documentoCliente: ultimoCliente.numeroDocumentoCliente,
+        tipoDocumentoCliente: ultimoCliente.codigoCondicionTributariaCliente,
+        nombreCliente: ultimoCliente.apellidosCliente,
+        importeIva: $("#txtIva").val(),
+        netoGravado: $("#txtNetoGravado").val(),
+        monto: $("#txtPrecioVenta").val(),
+        DetalleVenta: vmDetalleVenta
+    }
 
     fetch("/Venta/RegistrarVenta", {
         method: "POST",
@@ -453,33 +772,13 @@ $("#btnTerminarVenta").click(function () {
                 mostrarInventario_Precios();
                 ClienteParaVenta = [];
                 mostrarCliente();
+                $("#txtTipoComprobante").val($("#txtTipoComprobante option:first").val());
+                $("#txtCambio").text("");
 
-                $("#txtTipoComprobante").val($("#txtTipoComprobante option:first").val())
-
-                swal("Registrado!", `Numero Venta : ${responseJson.objeto.numeroVenta}`, "success")
+                swal("Registrado!", `Numero Venta : ${responseJson.objeto.numeroComprobante}`, "success");
             } else {
                 swal("Lo sentimos!", "No se pudo registrar la venta", "error")
             }
         })
 
-})
-
-
-
-function calcularCambio() {
-    // Obtener el monto pagado
-    const montoPagado = parseFloat($("#txtMonto").val());
-    // Obtener el total de la venta
-    const totalVenta = parseFloat($("#txtTotalVenta").text());
-
-    // Calcular el cambio
-    const cambio = montoPagado - totalVenta;
-
-    if (cambio >= 0) {
-        // Mostrar el cambio en el campo correspondiente del modal de pago
-        $("#txtCambio").text(cambio.toFixed(2)); // Redondear a 2 decimales
-    } else {
-        // Si el cambio es negativo o cero, ocultar el campo de cambio
-        $("#txtCambio").text(""); // Limpiar el contenido del campo
-    }
 }

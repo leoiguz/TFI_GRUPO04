@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using AFIPService;
 using NuGet.Protocol.Plugins;
+using Newtonsoft.Json;
 
 namespace SistemaVenta.AplicacionWeb.Controllers
 {
@@ -60,12 +61,12 @@ namespace SistemaVenta.AplicacionWeb.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> SolicitarAutorizacion(string codigo)
+        public async Task<IActionResult> SolicitarAutorizacion([FromBody] string codigo)
         {
+
             try
             {
                 var cliente = new LoginServiceClient();
-
                 var token = await cliente.SolicitarAutorizacionAsync(codigo);
                 cliente.Close();
 
@@ -73,7 +74,88 @@ namespace SistemaVenta.AplicacionWeb.Controllers
             }
             catch (Exception ex)
             {
-                // Maneja cualquier excepción que ocurra durante la solicitud
+                return Json(new { Error = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SolicitarUltimosComprobantes([FromBody] string token)
+        {
+
+            try
+            {
+                var cliente = new LoginServiceClient();
+                var ultimosComprobantes = await cliente.SolicitarUltimosComprobantesAsync(token);
+                cliente.Close();
+
+                return StatusCode(StatusCodes.Status200OK, ultimosComprobantes);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Error = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SolicitarCae([FromBody] VMCae ventaCae)
+        {
+
+            try
+            {
+
+                int numeroTipoComprobante = ventaCae.TipoComprobante;
+                int numeroTipoDocumento = ventaCae.TipoDocumento;
+
+                AFIPService.TipoComprobante tipoComprobante = AFIPService.TipoComprobante.FacturaB; ;
+                AFIPService.TipoDocumento tipoDocumento = AFIPService.TipoDocumento.ConsumidorFinal; ;
+
+                switch (numeroTipoComprobante)
+                {
+                    case 1:
+                        tipoComprobante = AFIPService.TipoComprobante.FacturaA;
+                        break;
+                    case 6:
+                        tipoComprobante = AFIPService.TipoComprobante.FacturaB;
+                        break;
+                }
+
+                switch (numeroTipoDocumento)
+                {
+                    case 80:
+                        tipoDocumento = AFIPService.TipoDocumento.Cuit;
+                        break;
+                    case 86:
+                        tipoDocumento = AFIPService.TipoDocumento.Cuil;
+                        break;
+                    case 96:
+                        tipoDocumento = AFIPService.TipoDocumento.Dni;
+                        break;
+                    case 99:
+                        tipoDocumento = AFIPService.TipoDocumento.ConsumidorFinal;
+                        break;
+                }
+
+                if (tipoDocumento == AFIPService.TipoDocumento.ConsumidorFinal) ventaCae.NumeroDocumento = 0;
+
+                SolicitudAutorizacion solicitud = new SolicitudAutorizacion
+                {
+                    Fecha = ventaCae.Fecha,
+                    ImporteIva = ventaCae.ImporteIva,
+                    ImporteNeto = ventaCae.ImporteNeto,
+                    ImporteTotal = ventaCae.ImporteTotal,
+                    Numero = ventaCae.Numero + 1,
+                    NumeroDocumento = ventaCae.NumeroDocumento,
+                    TipoComprobante = tipoComprobante,
+                    TipoDocumento = tipoDocumento
+                };
+                var cliente = new LoginServiceClient();
+                var cae = await cliente.SolicitarCaeAsync(ventaCae.Token, solicitud);
+                cliente.Close();
+
+                return StatusCode(StatusCodes.Status200OK, cae);
+            }
+            catch (Exception ex)
+            {
                 return Json(new { Error = ex.Message });
             }
         }
@@ -131,6 +213,14 @@ namespace SistemaVenta.AplicacionWeb.Controllers
             return StatusCode(StatusCodes.Status200OK, vmTipoComprobante);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> ObtenerAFIP()
+        {
+            VMAFIP vmAFIP = _mapper.Map<VMAFIP>(await _ventaServicio.ObtenerDatosAFIP());
+
+            return StatusCode(StatusCodes.Status200OK, vmAFIP);
+        }
+
         public IActionResult MostrarPDFVenta(string numeroVenta)
         {
 
@@ -156,6 +246,27 @@ namespace SistemaVenta.AplicacionWeb.Controllers
 
         }
 
+        [HttpPut]
+        public async Task<IActionResult> EditarAFIP([FromBody] VMAFIP modelo)
+        {
+            GenericResponse<VMAFIP> gResponse = new GenericResponse<VMAFIP>();
+
+            try
+            {
+                AFIP afip_editado = await _ventaServicio.EditarAfip(_mapper.Map<AFIP>(modelo));
+                modelo = _mapper.Map<VMAFIP>(afip_editado);
+
+                gResponse.Estado = true;
+                gResponse.Objeto = modelo;
+            }
+            catch (Exception ex)
+            {
+                gResponse.Estado = false;
+                gResponse.Mensaje = ex.Message;
+            }
+
+            return StatusCode(StatusCodes.Status200OK, gResponse);
+        }
 
     }
 }

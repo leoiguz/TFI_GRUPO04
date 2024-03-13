@@ -107,9 +107,7 @@ $("#btnGuardar").click(function () {
             $("#txtNumeroDocumento").focus();
             return;
         }
-    } else if (condicionTributariaValidacion === '5') {
-        $("#txtNumeroDocumento").val("0");
-    } else if (condicionTributariaValidacion === '6' || condicionTributariaValidacion === '7') {
+    }  else if (condicionTributariaValidacion === '6' || condicionTributariaValidacion === '7') {
         const numeroDocumento = $("#txtNumeroDocumento").val();
         if (numeroDocumento.length !== 11) {
             toastr.error("", "El número de documento debe tener 11 dígitos para la condición tributaria CUIT/CUIL");

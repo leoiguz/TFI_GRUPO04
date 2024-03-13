@@ -17,8 +17,8 @@ namespace SistemaVenta.BLL.Interfaces
 		Task<Venta> Detalle(string numeroVenta);
 		Task<List<DetalleVenta>> Reporte(string fechaInicio, string fechaFin);
 		Task<TipoComprobante> TipoComprobantePorCondicionTributaria(string busqueda);
-
-
+		Task<AFIP> ObtenerDatosAFIP();
+		Task<AFIP> EditarAfip(AFIP entidad);
 
     }
 }
