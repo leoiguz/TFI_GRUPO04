@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using Microsoft.EntityFrameworkCore;
 using SistemaVenta.DAL.DBContext;
 using SistemaVenta.DAL.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace SistemaVenta.DAL.Implementacion

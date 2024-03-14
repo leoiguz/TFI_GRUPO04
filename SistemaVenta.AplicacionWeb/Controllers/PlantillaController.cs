@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-using AutoMapper;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using SistemaVenta.AplicacionWeb.Models.ViewModels;
 using SistemaVenta.BLL.Interfaces;
 

@@ -79,11 +79,11 @@ $("#btnBuscar").click(function () {
                     $("#tbventa tbody").append(
                         $("<tr>").append(
                             $("<td>").text(venta.fechaRegistro),
-                            $("<td>").text(venta.numeroVenta),
+                            $("<td>").text(venta.numeroComprobante),
                             $("<td>").text(venta.tipoComprobante),
                             $("<td>").text(venta.documentoCliente),
                             $("<td>").text(venta.nombreCliente),
-                            $("<td>").text(venta.total),
+                            $("<td>").text(venta.monto),
                             $("<td>").append(
                                 $("<button>").addClass("btn btn-info btn-sm").append(
                                     $("<i>").addClass("fas fa-eye")
@@ -105,14 +105,14 @@ $("#tbventa tbody").on("click", ".btn-info", function () {
     let d = $(this).data("venta")
 
     $("#txtFechaRegistro").val(d.fechaRegistro)
-    $("#txtNumVenta").val(d.numeroVenta)
+    $("#txtNumVenta").val(d.numeroComprobante)
     $("#txtUsuarioRegistro").val(d.usuario)
     $("#txtTipoComprobante").val(d.tipoComprobante)
     $("#txtDocumentoCliente").val(d.documentoCliente)
     $("#txtNombreCliente").val(d.nombreCliente)
-    $("#txtSubTotal").val(d.subTotal);
-    $("#txtIGV").val(d.impuestoTotal); 
-    $("#txtTotal").val(d.total);
+    $("#txtSubTotal").val(d.netoGravado);
+    $("#txtIGV").val(d.importeIva); 
+    $("#txtTotal").val(d.monto);
 
 
     $("#tbProductos tbody").html("");
@@ -123,8 +123,8 @@ $("#tbventa tbody").on("click", ".btn-info", function () {
             $("<tr>").append(
                 $("<td>").text(item.nombreArticulo),
                 $("<td>").text(item.cantidad),
-                $("<td>").text(item.precio),
-                $("<td>").text(item.total),
+                $("<td>").text(item.netoGravado),
+                $("<td>").text(parseFloat(parseFloat(item.netoGravado) * parseInt(item.cantidad))),
             )
         )
 

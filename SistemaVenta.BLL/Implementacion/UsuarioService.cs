@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Microsoft.EntityFrameworkCore;
-using System.Net;
+﻿using Microsoft.EntityFrameworkCore;
 using SistemaVenta.BLL.Interfaces;
 using SistemaVenta.DAL.Interfaces;
 using SistemaVenta.Entity;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using System.Diagnostics.SymbolStore;
+using System.Net;
+using System.Text;
 
 namespace SistemaVenta.BLL.Implementacion
 {

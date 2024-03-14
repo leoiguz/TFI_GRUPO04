@@ -1,5 +1,6 @@
 ﻿/*-------------------------------------------------------------BUSCAR CLIENTE-----------------------------------------------------------*/
 
+//Obtengo los clientes
 $(document).ready(function () {
     $("#cboBuscarCliente").select2({
         ajax: {
@@ -37,6 +38,7 @@ $(document).ready(function () {
 
 })
 
+//Muestro los clientes a buscar
 function formatoResultadosClientes(data) {
     if (data.loading)
         return data.text;
@@ -56,7 +58,7 @@ function formatoResultadosClientes(data) {
     return contenedorCliente;
 }
 
-
+//Agrego el cliente a la venta
 let ClienteParaVenta = [];
 $("#cboBuscarCliente").on("select2:select", function (e) {
     const data = e.params.data;
@@ -86,22 +88,30 @@ $("#cboBuscarCliente").on("select2:select", function (e) {
             nombreCondicionTributariaCliente: data.condicionTributaria,
             codigoCondicionTributariaCliente: data.condicionTributariaCodigo
 
-        }
+        }      
+
 
         ClienteParaVenta.push(cliente)
         mostrarCliente();
-        mostrarTipoComprobante(data.condicionTributaria);
+        mostrarTipoComprobante(cliente.nombreCondicionTributariaCliente);
         $("#cboBuscarCliente").val("").trigger("change")
         swal.close()
     }
 
 })
 
+//Muestra los datos del cliente en la tabla
 function mostrarCliente() {
 
     $("#tbCliente tbody").html("")
 
     ClienteParaVenta.forEach((item) => {
+        if (precioTotal >= 98000) {
+
+            item.nombreCondicionTributariaCliente = "Dni";
+            item.codigoCondicionTributariaCliente = "96";
+
+        }
 
         $("#tbCliente tbody").append(
             $("<tr>").append(
@@ -116,7 +126,10 @@ function mostrarCliente() {
     }) 
 
 }
+
+//Obtengo el tipo de comprobante segun condicion tributaria
 let CodigoTipoComprobante;
+let IdTipoComprobante;
 function mostrarTipoComprobante(condicionTributaria) {
 
     fetch(`/Venta/ObtenerTipoComprobante?busqueda=${condicionTributaria}`)
@@ -128,6 +141,7 @@ function mostrarTipoComprobante(condicionTributaria) {
             if (responseJson) {
                 const d = responseJson;
                 $("#txtTipoComprobante").val(d.descripcion);
+                IdTipoComprobante = d.idTipoComprobante;
                 CodigoTipoComprobante = d.codigo;
                 
             }
@@ -139,6 +153,7 @@ function mostrarTipoComprobante(condicionTributaria) {
 }
 
 /*-------------------------------------------------------------BUSCAR INVENTARIO--------------------------------------------------------*/
+//Obtengo los inventarios
 
 $(document).ready(function () {
 
@@ -179,6 +194,7 @@ $(document).ready(function () {
 
 })
 
+//Muestro los inventarios a buscar
 function formatoResultados(data) {
     if (data.loading)
         return data.text;
@@ -198,6 +214,8 @@ function formatoResultados(data) {
     return contenedor;
 }
 
+
+//Agrego el inventario a la venta
 $(document).on("select2:open", function () {
     document.querySelector(".select2-search__field").focus();
 })
@@ -246,8 +264,8 @@ $("#cboBuscarInventario").on("select2:select", function (e) {
             }
             
             InventariosParaVenta.push(inventario)
-
             mostrarInventario_Precios();
+            mostrarCliente();
             $("#cboBuscarInventario").val("").trigger("change")
             swal.close()
         }
@@ -255,19 +273,27 @@ $("#cboBuscarInventario").on("select2:select", function (e) {
 
 })
 
-let netoGravadoArticulo = 0;
-let netoGravadoTotal = 0;
-let ivaTotal = 0;
-let ivaArticulo = 0;
-let precioIndividual = 0;
-let precioVenta = 0;
-let precioTotal = 0;
+//Calculo los precios a mostrar
+let netoGravadoArticulo;
+let netoGravadoTotal;
+let ivaTotal;
+let ivaArticulo;
+let precioIndividual;
+let precioVenta;
+let precioTotal ;
 
 function mostrarInventario_Precios() {
 
+    netoGravadoArticulo = 0;
+    netoGravadoTotal = 0;
+    ivaTotal = 0;
+    ivaArticulo = 0;
+    precioIndividual = 0;
+    precioVenta = 0;
+    precioTotal = 0;
+
 
     $("#tbInventario tbody").html("")
-
     InventariosParaVenta.forEach((item) => {
 
         netoGravadoArticulo = parseFloat(item.netoGravado);
@@ -301,16 +327,19 @@ function mostrarInventario_Precios() {
     })
 }
 
+//Eliminar inventario de la venta
 $(document).on("click", "button.btn-eliminar", function () {
 
     const _idinventario = $(this).data("idInventario")
 
     InventariosParaVenta = InventariosParaVenta.filter(p => p.idInventario != _idinventario);
-
+    $("#txtNetoGravado").val(0)
+    $("#txtIva").val(0)
+    $("#txtPrecioVenta").val(0)
     mostrarInventario_Precios();
 })
 
-/**--------------------------------------- Confirmar Venta ---------------------------------------------------------------**/
+/**--------------------------------------- CONFIRMAR VENTA ---------------------------------------------------------------**/
 let fechaActual = new Date();
 let fechaVencimiento = new Date();
 let miToken;
@@ -326,7 +355,7 @@ let modeloAFIP = {
 $("#btnConfirmarVenta").click(function () {
     
 
-    // Verifica las condiciones después de obtener los datos de AFIP
+    // Verifica que se ingreso un cliente e inventarios para la venta
     if (InventariosParaVenta.length < 1) {
         toastr.warning("", "Debe ingresar inventarios")
         return;
@@ -350,7 +379,7 @@ $("#btnConfirmarVenta").click(function () {
                 idAFIP: d.idAFIP,
                 token: d.token,
                 cae: d.cae,
-                vencimientoToken: new Date(d.vencimientoToken) // Convierte la cadena de fecha en un objeto Date
+                vencimientoToken: new Date(d.vencimientoToken)
             };            
 
             // Verifica la fecha de vencimiento del token
@@ -378,6 +407,7 @@ $("#btnConfirmarVenta").click(function () {
                             modeloAFIP.vencimientoToken = data.vencimiento;
                             fechaVencimiento = data.vencimiento;
 
+                            // Edita los datos del Modelo AFIP: Token y Vencimiento Token
                             fetch("/Venta/EditarAFIP", {
                                 method: "PUT",
                                 headers: { "Content-Type": "application/json; charset=utf-8" },
@@ -395,7 +425,7 @@ $("#btnConfirmarVenta").click(function () {
                         console.error('Error:', error);
                     });
             }     
-
+            // Obtengo el Token para utilizarlo en otras solicitudes
             miToken = modeloAFIP.token;
 
             const requisitosUltimosComprobantes = {
@@ -404,6 +434,7 @@ $("#btnConfirmarVenta").click(function () {
                 body: JSON.stringify(miToken)
             };
 
+            //Realiza la solicitud de los ultimos comprobantes
             $("#modalData").find("div.modal-content").LoadingOverlay("show");
             fetch('/Venta/SolicitarUltimosComprobantes', requisitosUltimosComprobantes)
                 .then(response => {
@@ -425,11 +456,33 @@ $("#btnConfirmarVenta").click(function () {
             console.error('Error al obtener datos AFIP:', error);
         });
 
-    mostrarModalPago();
+    //Ventana de Pago
+    /*mostrarModalPago();*/
+
+    miFuncion();
 
 })
 
-/*------------------------------------- PAGO ------------------------------------------*/
+async function miFuncion() {
+    try {
+        // Esperar 3 segundos (3000 milisegundos)
+        await esperar(3000);
+
+        // Llamar a la función para mostrar el modal
+        await mostrarModalPago();
+
+        console.log('El modal se ha mostrado correctamente.');
+    } catch (error) {
+        console.error('Ocurrió un error al mostrar el modal:', error);
+    }
+}
+
+// Función para esperar un cierto tiempo
+function esperar(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/*--------------------------------------------------- REALIZAR PAGO --------------------------------------------------------*/
 
 const MODELO_BASE_PAGO = {
     idPago: 0,
@@ -439,6 +492,7 @@ const MODELO_BASE_PAGO = {
 
 $(document).ready(function () {
 
+    //Obtengo la lista de pagos. Ej: Efectivo, Tarjeta, etc.
     fetch("/TipoPago/Lista")
         .then(response => {
             return response.ok ? response.json() : Promise.reject(response);
@@ -454,54 +508,17 @@ $(document).ready(function () {
         })
 })
 
-let tarjeta = document.getElementById('Tarjeta');
-
-function mostrarModalPago(modelo = MODELO_BASE_PAGO) {
-
-    const cboTipoPago = document.getElementById('cboTipoPago');
-    const efectivo = document.getElementById('Efectivo');
-
-    $("#txtId").val(modelo.idPago)
-    $("#txtMonto").val(modelo.monto)
-    cboTipoPago.addEventListener('change', function () {
-        // Obtener el valor seleccionado del tipo de pago
-        const tipoPago = cboTipoPago.value;
-
-        // Mostrar u ocultar los campos según el tipo de pago seleccionado
-        if (tipoPago === '1') {
-            efectivo.style.display = 'block';
-            tarjeta.style.display = 'none';
-        } else if (tipoPago === '2') {
-            efectivo.style.display = 'none';
-            tarjeta.style.display = 'block';
-            mostrarCamposTarjeta();
-        } else {
-            // En caso de otro tipo de pago, ocultar ambos conjuntos de campos
-            efectivo.style.display = 'none';
-            tarjeta.style.display = 'none';
-        }
-    });
-
-    $("#txtTotalVenta").text(precioVenta);
-    $("#txtMonto").on("input", function () {
-        calcularCambio();
-    });
-
-    $("#modalPago").modal("show")
-}
-
-
-
-/*-------------------------------------------------------------TERMINAR VENTA--------------------------------------------------------*/
+/*----------------------------------------------------------- TERMINAR VENTA ------------------------------------------------------*/
 let binPago;
 let idPago;
+let estadoCae;
 
 $("#btnTerminarVenta").click(function () {
 
- 
+
+    //Validacion de todos los campos del pago
     const montoIngresado = parseFloat($("#txtMonto").val());
     const totalVenta = parseFloat($("#txtTotalVenta").text());
-
     const numeroTarjeta = document.getElementById("txtNumeroTarjeta").value;
     const inputMesTarjeta = document.getElementById("txtMesTarjeta");
     const mesTarjeta = inputMesTarjeta.value.trim();
@@ -541,6 +558,7 @@ $("#btnTerminarVenta").click(function () {
         return;
     }
 
+    //Obtengo el numero de comprobante segun el tipo de comprobante
     const ultimoCliente = ClienteParaVenta[ClienteParaVenta.length - 1];
     let numeroComprobante = 0;
 
@@ -550,26 +568,25 @@ $("#btnTerminarVenta").click(function () {
         }
     });
 
-
+    //Adapto la fecha al formato xs:dateTime
     function obtenerFechaHoraActual() {
-        var fecha = new Date(); // Obtiene la fecha y hora actual
-        var año = fecha.getFullYear(); // Obtiene el año
-        var mes = pad(fecha.getMonth() + 1); // Obtiene el mes (se suma 1 porque los meses comienzan desde 0)
-        var dia = pad(fecha.getDate()); // Obtiene el día del mes
-        var horas = pad(fecha.getHours()); // Obtiene las horas
-        var minutos = pad(fecha.getMinutes()); // Obtiene los minutos
-        var segundos = pad(fecha.getSeconds()); // Obtiene los segundos
+        var fecha = new Date();
+        var año = fecha.getFullYear();
+        var mes = pad(fecha.getMonth() + 1);
+        var dia = pad(fecha.getDate());
+        var horas = pad(fecha.getHours());
+        var minutos = pad(fecha.getMinutes());
+        var segundos = pad(fecha.getSeconds());
 
-        // Formatea la fecha y hora en el formato xs:dateTime (ISO 8601)
         var fechaHoraFormateada = año + '-' + mes + '-' + dia + 'T' + horas + ':' + minutos + ':' + segundos;
 
         return fechaHoraFormateada;
     }
-
     function pad(numero) {
         return numero < 10 ? '0' + numero : numero;
     }
 
+    //Solicitar Cae
     const ventaSolicitarCae = {
         token: miToken,
         fecha: fechaActual = obtenerFechaHoraActual(),              
@@ -581,7 +598,8 @@ $("#btnTerminarVenta").click(function () {
         tipoComprobante: parseInt(CodigoTipoComprobante),
         tipoDocumento: parseInt(ultimoCliente.codigoCondicionTributariaCliente)       
     };
-    console.log(ventaSolicitarCae);
+
+
     const requisitosCae = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -597,14 +615,16 @@ $("#btnTerminarVenta").click(function () {
             return response.json();
         })
         .then(data => {
-            // Maneja la respuesta del servidor aquí
-            console.log(data);
+
+            if (data.estado === 1) {
+                estadoCae = "Aprobada"
+            }
         })
         .catch(error => {
             console.error('Error:', error);
         });
 
-   
+   //Si el metodo de pago seleccionado es 'Tarjeta', se realiza este bloque de codigo
     if (tarjeta.style.display === 'block') {
 
         const cardData = {
@@ -628,6 +648,7 @@ $("#btnTerminarVenta").click(function () {
             body: JSON.stringify(cardData)
         };
 
+        //Solicitar token de pago
         fetch('https://developers.decidir.com/api/v2/tokens', requisitosTokenPago)
             .then(response => {
                 if (!response.ok) {
@@ -640,9 +661,11 @@ $("#btnTerminarVenta").click(function () {
                 idPago = data.id;
                 binPago = data.bin.slice(0, -2);
 
+                numeroComprobante = numeroComprobante + 1;
+
                 const cardData2 = {
 
-                    site_transaction_id: (numeroComprobante + 1).toString(),
+                    site_transaction_id: (numeroComprobante).toString(),
                     payment_method_id: 1,
                     token: idPago,
                     bin: binPago,
@@ -668,7 +691,7 @@ $("#btnTerminarVenta").click(function () {
                     body: JSON.stringify(cardData2)
                 };
 
-
+                //Solicitar autorizacion de pago
                 fetch('https://developers.decidir.com/api/v2/payments', requisitosPago)
                     .then(response => {
                         if (!response.ok) {
@@ -686,8 +709,6 @@ $("#btnTerminarVenta").click(function () {
                         console.error('Error:', error);
                         swal("Lo sentimos!", "No se pudo registrar la venta", "error")
                     });
-
-
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -701,22 +722,43 @@ $("#btnTerminarVenta").click(function () {
 })
 
 
+//Se evalua que campos mostrar dependiendo el pago seleccionado
 
+let tarjeta = document.getElementById('Tarjeta');
 
-function calcularCambio() {
+function mostrarModalPago(modelo = MODELO_BASE_PAGO) {
 
-    const montoPagado = parseFloat($("#txtMonto").val());
-    const totalVenta = parseFloat($("#txtTotalVenta").text());
+    const cboTipoPago = document.getElementById('cboTipoPago');
+    const efectivo = document.getElementById('Efectivo');
 
-    const cambio = montoPagado - totalVenta;
+    $("#txtId").val(modelo.idPago)
+    $("#txtMonto").val(modelo.monto)
+    cboTipoPago.addEventListener('change', function () {
+        // Obtener el valor seleccionado del tipo de pago
+        const tipoPago = cboTipoPago.value;
 
-    if (cambio >= 0) {
-        $("#txtCambio").text(cambio.toFixed(2));
-    } else {
-        $("#txtCambio").text("");
-    }
+        // Mostrar u ocultar los campos según el tipo de pago seleccionado
+        if (tipoPago === '1') {
+            efectivo.style.display = 'block';
+            tarjeta.style.display = 'none';
+        } else if (tipoPago === '2') {
+            efectivo.style.display = 'none';
+            tarjeta.style.display = 'block';
+            mostrarCamposTarjeta();
+        } else {
+            // En caso de otro tipo de pago, ocultar ambos conjuntos de campos
+            efectivo.style.display = 'none';
+            tarjeta.style.display = 'none';
+        }
+    });
+
+    $("#txtTotalVenta").text(precioVenta);
+    $("#txtMonto").on("input", function () {
+        calcularCambio();
+    });
+
+    $("#modalPago").modal("show")
 }
-
 
 const MODELO_BASE_TARJETA = {
     idTarjeta: 0,
@@ -738,13 +780,30 @@ function mostrarCamposTarjeta(modelo = MODELO_BASE_TARJETA) {
     $("#modalPago").modal("show")
 }
 
+//Se calcula el cambio
+function calcularCambio() {
 
+    const montoPagado = parseFloat($("#txtMonto").val());
+    const totalVenta = parseFloat($("#txtTotalVenta").text());
+
+    const cambio = montoPagado - totalVenta;
+
+    if (cambio >= 0) {
+        $("#txtCambio").text(cambio.toFixed(2));
+    } else {
+        $("#txtCambio").text("");
+    }
+}
+
+//Registrar la venta
 function registrarVenta() {
 
     const vmDetalleVenta = InventariosParaVenta;
     const ultimoCliente = ClienteParaVenta[ClienteParaVenta.length - 1];
 
     const venta = {
+        idCliente: ultimoCliente.idCliente,
+        idTipoComprobante: IdTipoComprobante,
         tipoComprobante: CodigoTipoComprobante,
         documentoCliente: ultimoCliente.numeroDocumentoCliente,
         tipoDocumentoCliente: ultimoCliente.codigoCondicionTributariaCliente,
@@ -752,6 +811,7 @@ function registrarVenta() {
         importeIva: $("#txtIva").val(),
         netoGravado: $("#txtNetoGravado").val(),
         monto: $("#txtPrecioVenta").val(),
+        estado: estadoCae,
         DetalleVenta: vmDetalleVenta
     }
 

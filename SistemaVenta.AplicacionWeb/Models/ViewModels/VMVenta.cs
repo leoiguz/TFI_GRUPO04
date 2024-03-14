@@ -18,6 +18,7 @@ namespace SistemaVenta.AplicacionWeb.Models.ViewModels
         public string? ImporteIva { get; set; }
         public string? NetoGravado { get; set; }
         public string? Monto { get; set; }
+        public string? Estado { get; set; }
         public string? FechaRegistro { get; set; }
         public virtual ICollection<VMDetalleVenta>? DetalleVenta { get; set; }
     }

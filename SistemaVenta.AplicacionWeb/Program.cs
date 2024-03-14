@@ -1,9 +1,9 @@
-using SistemaVenta.AplicacionWeb.Utilidades.Automapper;
-using SistemaVenta.IOC;
-using SistemaVenta.AplicacionWeb.Utilidades.Extensiones;
 using DinkToPdf;
 using DinkToPdf.Contracts;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using SistemaVenta.AplicacionWeb.Utilidades.Automapper;
+using SistemaVenta.AplicacionWeb.Utilidades.Extensiones;
+using SistemaVenta.IOC;
 
 var builder = WebApplication.CreateBuilder(args);
 

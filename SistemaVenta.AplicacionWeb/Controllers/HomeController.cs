@@ -1,18 +1,15 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SistemaVenta.AplicacionWeb.Models;
-using System.Diagnostics;
-
-using System.Security.Claims;
-
-
-using AutoMapper;
 using SistemaVenta.AplicacionWeb.Models.ViewModels;
 using SistemaVenta.AplicacionWeb.Utilidades.Response;
 using SistemaVenta.BLL.Interfaces;
 using SistemaVenta.Entity;
+using System.Diagnostics;
+using System.Security.Claims;
 
 namespace SistemaVenta.AplicacionWeb.Controllers
 {

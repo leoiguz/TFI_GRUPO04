@@ -1,6 +1,4 @@
-﻿using System.Security.Policy;
-
-namespace SistemaVenta.AplicacionWeb.Utilidades.Response
+﻿namespace SistemaVenta.AplicacionWeb.Utilidades.Response
 {
     public class GenericResponse<TObject>
     {

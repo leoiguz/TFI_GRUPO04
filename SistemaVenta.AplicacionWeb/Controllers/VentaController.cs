@@ -1,17 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AFIPService;
 using AutoMapper;
+using DinkToPdf;
+using DinkToPdf.Contracts;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SistemaVenta.AplicacionWeb.Models.ViewModels;
 using SistemaVenta.AplicacionWeb.Utilidades.Response;
 using SistemaVenta.BLL.Interfaces;
 using SistemaVenta.Entity;
-
-using DinkToPdf;
-using DinkToPdf.Contracts;
-using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using AFIPService;
-using NuGet.Protocol.Plugins;
-using Newtonsoft.Json;
 
 namespace SistemaVenta.AplicacionWeb.Controllers
 {
