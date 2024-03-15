@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Cucumber.Messages" Version="24.0.1" />
+    <PackageReference Include="Microsoft.TestPlatform" Version="17.10.0-preview-24080-01" />
+    <PackageReference Include="SpecFlow" Version="4.0.31-beta" />
+    <PackageReference Include="SpecFlow.NUnit" Version="4.0.31-beta" />
+  </ItemGroup>
+
+</Project>
