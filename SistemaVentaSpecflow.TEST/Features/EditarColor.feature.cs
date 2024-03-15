@@ -20,22 +20,23 @@ namespace SistemaVentaSpecflow.TEST.Features
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.9.0.0")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [NUnit.Framework.TestFixtureAttribute()]
-    [NUnit.Framework.DescriptionAttribute("Solicitar Autorización")]
-    public partial class SolicitarAutorizacionFeature
+    [NUnit.Framework.DescriptionAttribute("Editar Color")]
+    public partial class EditarColorFeature
     {
         
         private TechTalk.SpecFlow.ITestRunner testRunner;
         
         private string[] _featureTags = ((string[])(null));
         
-#line 1 "SolicitarAutorizacion.feature"
+#line 1 "EditarColor.feature"
 #line hidden
         
         [NUnit.Framework.OneTimeSetUpAttribute()]
         public virtual void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features", "Solicitar Autorización", null, ProgrammingLanguage.CSharp, ((string[])(null)));
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features", "Editar Color", "  Como Administrador\r\n  Quiero poder editar un color existente\r\n  Para actualizar" +
+                    " su información", ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -74,55 +75,13 @@ namespace SistemaVentaSpecflow.TEST.Features
         }
         
         [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("Solicitar autorización con un código válido")]
-        public virtual void SolicitarAutorizacionConUnCodigoValido()
+        [NUnit.Framework.DescriptionAttribute("Editar un color existente correctamente")]
+        public virtual void EditarUnColorExistenteCorrectamente()
         {
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Solicitar autorización con un código válido", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
-#line 3
-  this.ScenarioInitialize(scenarioInfo);
-#line hidden
-            bool isScenarioIgnored = default(bool);
-            bool isFeatureIgnored = default(bool);
-            if ((tagsOfScenario != null))
-            {
-                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
-            }
-            if ((this._featureTags != null))
-            {
-                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
-            }
-            if ((isScenarioIgnored || isFeatureIgnored))
-            {
-                testRunner.SkipScenario();
-            }
-            else
-            {
-                this.ScenarioStart();
-#line 4
-    testRunner.Given("que tengo un código de autorización válido \"4E6C1831-0C85-439F-AB55-02D4227CE970\"" +
-                        "", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line hidden
-#line 5
-    testRunner.When("envío una solicitud para solicitar autorización con el código \"4E6C1831-0C85-439F" +
-                        "-AB55-02D4227CE970\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Editar un color existente correctamente", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
 #line 6
-    testRunner.Then("debería recibir un código de autorización válido", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            }
-            this.ScenarioCleanup();
-        }
-        
-        [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("Solicitar autorización con un código inválido")]
-        public virtual void SolicitarAutorizacionConUnCodigoInvalido()
-        {
-            string[] tagsOfScenario = ((string[])(null));
-            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Solicitar autorización con un código inválido", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
-#line 8
   this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -142,14 +101,32 @@ namespace SistemaVentaSpecflow.TEST.Features
             else
             {
                 this.ScenarioStart();
-#line 9
-    testRunner.Given("que tengo un código de autorización inválido \"codigo_invalido\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+                TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Id",
+                            "Descripcion"});
+                table1.AddRow(new string[] {
+                            "1",
+                            "Azul"});
+#line 7
+    testRunner.Given("que tengo un color con la siguiente información:", ((string)(null)), table1, "Given ");
 #line hidden
+                TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Id",
+                            "Descripcion"});
+                table2.AddRow(new string[] {
+                            "1",
+                            "Celeste"});
 #line 10
-    testRunner.When("envío una solicitud para solicitar autorización con el código \"codigo_invalido\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+    testRunner.When("realizo una solicitud para editar el color con la siguiente información:", ((string)(null)), table2, "When ");
 #line hidden
-#line 11
-    testRunner.Then("debería recibir un mensaje de error", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+                TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Id",
+                            "Descripcion"});
+                table3.AddRow(new string[] {
+                            "1",
+                            "Celeste"});
+#line 13
+    testRunner.Then("el color editado tiene la siguiente información:", ((string)(null)), table3, "Then ");
 #line hidden
             }
             this.ScenarioCleanup();
